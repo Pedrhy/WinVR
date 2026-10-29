@@ -2470,16 +2470,44 @@
             });
         });
 
-        // 2. HTML5 Drag & Drop
+        // 2. Safe HTML5 Drag & Drop (Handle-Only to Prevent Slider / Input Collision)
         let draggedCard = null;
+        let activeHandleCard = null;
 
         document.querySelectorAll('.card').forEach(card => {
-            card.setAttribute('draggable', 'true');
+            // Cards must NEVER have draggable="true" by default so sliders, buttons, inputs work natively
+            card.removeAttribute('draggable');
+            card.classList.remove('is-dragging', 'drag-over');
+
+            const handle = card.querySelector('.card-drag-handle');
+            if (handle) {
+                // Drag is ONLY armed when explicitly pressing mouse/touch down on the 6-dots handle icon
+                handle.addEventListener('mousedown', function(e) {
+                    activeHandleCard = card;
+                    card.setAttribute('draggable', 'true');
+                });
+                handle.addEventListener('touchstart', function(e) {
+                    activeHandleCard = card;
+                    card.setAttribute('draggable', 'true');
+                }, { passive: true });
+            }
+
+            // Guard all inputs, sliders, and controls so mousedown on them disarms any card drag immediately
+            card.querySelectorAll('input, select, button, textarea, canvas, .presets-row, .slider-row, .slider-group').forEach(ctrl => {
+                ctrl.addEventListener('mousedown', function(e) {
+                    activeHandleCard = null;
+                    card.removeAttribute('draggable');
+                    e.stopPropagation();
+                }, { passive: true });
+            });
 
             card.addEventListener('dragstart', function(e) {
-                if (['INPUT', 'SELECT', 'BUTTON'].includes(e.target.tagName)) {
+                // Reject drag immediately if it did not originate from the 6-dots drag handle
+                if (!activeHandleCard || activeHandleCard !== this || e.target.closest('input, select, button, textarea, canvas, .presets-row, .slider-row, .slider-group')) {
                     e.preventDefault();
-                    return;
+                    this.removeAttribute('draggable');
+                    activeHandleCard = null;
+                    return false;
                 }
                 draggedCard = this;
                 this.classList.add('is-dragging');
@@ -2489,8 +2517,10 @@
 
             card.addEventListener('dragend', function() {
                 this.classList.remove('is-dragging');
+                this.removeAttribute('draggable');
                 document.querySelectorAll('.card.drag-over').forEach(c => c.classList.remove('drag-over'));
                 draggedCard = null;
+                activeHandleCard = null;
                 saveLayout();
             });
 
@@ -2508,6 +2538,9 @@
             card.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('drag-over');
+                this.removeAttribute('draggable');
+                if (draggedCard) draggedCard.removeAttribute('draggable');
+                activeHandleCard = null;
                 if (!draggedCard || draggedCard === this) return;
 
                 const parent = this.parentElement;
@@ -2521,6 +2554,20 @@
                 }
                 saveLayout();
             });
+        });
+
+        // Global mouseup/touchend cleanup to ensure cards are always disarmed
+        window.addEventListener('mouseup', function() {
+            if (activeHandleCard) {
+                activeHandleCard.removeAttribute('draggable');
+                activeHandleCard = null;
+            }
+        });
+        window.addEventListener('touchend', function() {
+            if (activeHandleCard) {
+                activeHandleCard.removeAttribute('draggable');
+                activeHandleCard = null;
+            }
         });
 
         // Allow dropping directly onto empty space in columns
