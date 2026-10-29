@@ -2327,7 +2327,77 @@
         gyroCtx.fillText(`YAW: ${(state.gyro.yaw % 360).toFixed(1)}°  PITCH: ${(state.gyro.pitch % 360).toFixed(1)}°`, 10, h - 10);
     }
 
+    // --- Theme Switcher (Dark / Light Mode) ---
+    const btnThemeToggle = document.getElementById('btnThemeToggle');
+    const themeIconDark = document.getElementById('themeIconDark');
+    const themeIconLight = document.getElementById('themeIconLight');
+    const themeToggleText = document.getElementById('themeToggleText');
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const isDark = theme === 'dark';
+        if (themeIconDark) themeIconDark.style.display = isDark ? 'inline-block' : 'none';
+        if (themeIconLight) themeIconLight.style.display = isDark ? 'none' : 'inline-block';
+        if (themeToggleText) themeToggleText.textContent = isDark ? 'Theme: Dark' : 'Theme: Light';
+        try {
+            localStorage.setItem('winvr_theme', theme);
+        } catch (e) {}
+    }
+
+    function initTheme() {
+        let savedTheme = 'dark';
+        try {
+            savedTheme = localStorage.getItem('winvr_theme') || 'dark';
+        } catch (e) {}
+        applyTheme(savedTheme);
+
+        if (btnThemeToggle) {
+            btnThemeToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                const next = current === 'dark' ? 'light' : 'dark';
+                applyTheme(next);
+            });
+        }
+    }
+
+    // --- Collapsible Sections with Chevron Arrows ---
+    function initCollapsibleSections() {
+        const collapsibleHeaders = document.querySelectorAll('.card-header.is-collapsible, .subcard-header.is-collapsible');
+
+        collapsibleHeaders.forEach(header => {
+            const targetId = header.dataset.target;
+            const container = targetId ? document.getElementById(targetId) : header.closest('.card, .collapsible-subcard');
+            if (!container) return;
+
+            // Restore saved state (default is expanded / false)
+            if (targetId) {
+                try {
+                    const isCollapsed = localStorage.getItem('winvr_collapse_' + targetId) === '1';
+                    if (isCollapsed) {
+                        container.classList.add('is-collapsed');
+                    }
+                } catch (e) {}
+            }
+
+            // Click listener
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('#btnToggleCurved') || e.target.closest('input') || e.target.closest('select')) {
+                    return;
+                }
+                const nowCollapsed = container.classList.toggle('is-collapsed');
+                if (targetId) {
+                    try {
+                        localStorage.setItem('winvr_collapse_' + targetId, nowCollapsed ? '1' : '0');
+                    } catch (e) {}
+                }
+            });
+        });
+    }
+
     // Initialize
+    initTheme();
+    initCollapsibleSections();
     loadSavedCalibration();
     loadNetworkInfo();
     connectServer();

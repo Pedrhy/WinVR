@@ -51,6 +51,123 @@
     --transition-base: 0.22s var(--ease-out);
 }
 
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-base: #f0f4f9;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #f8fafc;
+    --bg-surface-hover: #edf2f7;
+    --bg-input: #e2e8f0;
+
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-medium: rgba(0, 0, 0, 0.16);
+    --border-focus: #0284c7;
+    --border-card: rgba(0, 0, 0, 0.09);
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    --accent-cyan: #0284c7;
+    --accent-blue: #2563eb;
+    --accent-coral: #e11d48;
+    --accent-green: #059669;
+    --accent-yellow: #d97706;
+
+    --grad-primary: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    --grad-surface: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 20px rgba(2, 132, 199, 0.15);
+}
+
+[data-theme="light"] body {
+    background-color: var(--bg-base);
+    background-image:
+        radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(2, 132, 199, 0.04) 0%, transparent 45%);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .brand-title,
+[data-theme="light"] .card-title {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .badge {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .card:hover {
+    border-color: rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .preset-btn {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .preset-btn:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .preset-btn.active {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.4);
+    color: var(--accent-cyan);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .telemetry-badge {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .link-box input {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .preview-container {
+    background: #020617; /* Keep video frame dark for true contrast */
+}
+
+[data-theme="light"] .visualizer-container {
+    background: #090d16; /* Keep gyro HUD dark for crisp visualization */
+}
+
+[data-theme="light"] input[type="range"] {
+    background: #cbd5e1;
+}
+
+[data-theme="light"] .btn-secondary {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.14);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: #edf2f7;
+}
+
+[data-theme="light"] .stream-tip-banner {
+    background: rgba(2, 132, 199, 0.06);
+    border-left-color: var(--accent-cyan);
+    color: #1e3a5f;
+}
+
 /* Base Reset & Typography */
 * {
     margin: 0;
@@ -578,6 +695,7 @@ input[type="range"]::-webkit-slider-thumb:active {
 /* Segmented Pill Group (Airbnb Style) */
 .presets-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: 8px;
     background: var(--bg-input);
@@ -587,7 +705,8 @@ input[type="range"]::-webkit-slider-thumb:active {
 }
 
 .preset-btn {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 90px;
     padding: 7px 10px;
     background: transparent;
     border: 1px solid transparent;
@@ -611,6 +730,130 @@ input[type="range"]::-webkit-slider-thumb:active {
     border-color: rgba(0, 242, 254, 0.3);
     color: var(--accent-cyan);
     box-shadow: var(--shadow-sm);
+}
+
+/* Dedicated Grid for True Color Tone Mapping Presets (Prevents Overflow & Creates Clean Tiles) */
+.color-presets-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    background: var(--bg-input);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.color-presets-row .preset-btn {
+    min-width: 0;
+    padding: 9px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.35;
+    font-size: 0.74rem;
+}
+
+/* ==========================================================================
+   Collapsible Cards & Sections (Clean Toggle Chevrons)
+   ========================================================================== */
+.card-header.is-collapsible,
+.subcard-header.is-collapsible {
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), margin-bottom var(--transition-fast);
+}
+
+.card-header.is-collapsible:hover,
+.subcard-header.is-collapsible:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="light"] .card-header.is-collapsible:hover,
+[data-theme="light"] .subcard-header.is-collapsible:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.card-toggle-arrow {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.card-header.is-collapsible:hover .card-toggle-arrow,
+.subcard-header.is-collapsible:hover .card-toggle-arrow {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-subtle);
+    color: var(--accent-cyan);
+}
+
+[data-theme="light"] .card-header.is-collapsible:hover .card-toggle-arrow,
+[data-theme="light"] .subcard-header.is-collapsible:hover .card-toggle-arrow {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--accent-cyan);
+}
+
+.chevron-icon {
+    transition: transform var(--transition-base);
+}
+
+.card.is-collapsed .card-header {
+    margin-bottom: 0;
+}
+
+.card.is-collapsed .chevron-icon,
+.collapsible-subcard.is-collapsed .chevron-icon {
+    transform: rotate(-90deg);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card.is-collapsed .card-body,
+.collapsible-subcard.is-collapsed .subcard-body {
+    display: none !important;
+}
+
+.collapsible-subcard.is-collapsed {
+    padding-bottom: 14px;
+}
+
+/* Theme Toggle Button in Header */
+.theme-toggle-btn {
+    cursor: pointer;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    user-select: none;
+    font-family: inherit;
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--border-focus);
+    color: var(--accent-cyan);
+    transform: translateY(-1px);
+}
+
+.theme-icon {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.theme-toggle-btn:hover .theme-icon {
+    transform: rotate(15deg);
 }
 
 /* Checkbox Toggle Row */

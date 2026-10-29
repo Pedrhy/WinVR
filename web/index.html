@@ -26,6 +26,23 @@
             </div>
 
             <div class="header-badges">
+                <button id="btnThemeToggle" class="badge theme-toggle-btn" aria-label="Toggle Light and Dark Mode" title="Toggle Light/Dark Theme">
+                    <svg id="themeIconDark" class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="themeIconLight" class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span id="themeToggleText">Theme: Dark</span>
+                </button>
                 <div class="badge" title="Local PC HTTP/WebSocket Server">
                     <span class="dot dot-yellow" id="badgeServerDot"></span>
                     <span id="badgeServerText">Server: Connecting</span>
@@ -42,8 +59,8 @@
             <!-- Left Column: Stream & Window Picker & Network Engines -->
             <div class="col-stream">
                 <!-- Live Display / Window Stream Card -->
-                <section class="card" aria-labelledby="headingStream">
-                    <div class="card-header">
+                <section class="card" id="cardStream" aria-labelledby="headingStream">
+                    <div class="card-header is-collapsible" data-target="cardStream">
                         <div>
                             <h2 class="card-title" id="headingStream">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -55,9 +72,15 @@
                             </h2>
                             <p class="card-subtitle">Select any game window, media player, or full monitor to broadcast to your VR headset.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Live Video Preview Stage -->
+                    <div class="card-body">
+                        <!-- Live Video Preview Stage -->
                     <div class="preview-container">
                         <video id="previewVideo" autoplay playsinline muted></video>
                         <div id="previewPlaceholder" class="preview-placeholder">
@@ -121,11 +144,12 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </section>
 
                 <!-- Stream Performance & Functional FPS Engine Card (NEW) -->
                 <section class="card" id="cardFpsEngine" aria-labelledby="headingFps">
-                    <div class="card-header">
+                    <div class="card-header is-collapsible" data-target="cardFpsEngine">
                         <div>
                             <h2 class="card-title" id="headingFps" style="color: var(--accent-cyan);">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -136,71 +160,78 @@
                             </h2>
                             <p class="card-subtitle">Adjust streaming target frame rate dynamically without restarting. Paces hardware capture and encoding.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Functional Target FPS Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Target Streaming Frame Rate:</span>
-                            <span class="setting-val" id="valFps">60 FPS</span>
-                        </div>
-                        <input type="range" id="rangeFps" min="30" max="120" step="5" value="60" aria-label="Target Frame Rate">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
-                            <span>30 FPS (Battery)</span>
-                            <span>60 FPS (Balanced)</span>
-                            <span>90 FPS (VR Smooth)</span>
-                            <span>120 FPS (Ultra)</span>
+                    <div class="card-body">
+                        <!-- Functional Target FPS Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Target Streaming Frame Rate:</span>
+                                <span class="setting-val" id="valFps">60 FPS</span>
+                            </div>
+                            <input type="range" id="rangeFps" min="30" max="120" step="5" value="60" aria-label="Target Frame Rate">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
+                                <span>30 FPS (Battery)</span>
+                                <span>60 FPS (Balanced)</span>
+                                <span>90 FPS (VR Smooth)</span>
+                                <span>120 FPS (Ultra)</span>
+                            </div>
+
+                            <!-- Quick FPS Presets -->
+                            <div class="presets-row" style="margin-top: 10px;">
+                                <button class="preset-btn" id="btnFps30" data-fps="30">🔋 30 FPS</button>
+                                <button class="preset-btn active" id="btnFps60" data-fps="60">⚡ 60 FPS (Standard)</button>
+                                <button class="preset-btn" id="btnFps90" data-fps="90">🚀 90 FPS (VR Pro)</button>
+                                <button class="preset-btn" id="btnFps120" data-fps="120">🔥 120 FPS (Ultra)</button>
+                            </div>
                         </div>
 
-                        <!-- Quick FPS Presets -->
-                        <div class="presets-row" style="margin-top: 10px;">
-                            <button class="preset-btn" id="btnFps30" data-fps="30">🔋 30 FPS</button>
-                            <button class="preset-btn active" id="btnFps60" data-fps="60">⚡ 60 FPS (Standard)</button>
-                            <button class="preset-btn" id="btnFps90" data-fps="90">🚀 90 FPS (VR Pro)</button>
-                            <button class="preset-btn" id="btnFps120" data-fps="120">🔥 120 FPS (Ultra)</button>
-                        </div>
-                    </div>
-
-                    <!-- Live Stream Telemetry Grid (Honest Diagnostics: Target vs Actual) -->
-                    <div class="telemetry-grid">
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Target FPS</div>
-                            <div class="telemetry-value" id="statTargetFps">60 FPS</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Delivered FPS</div>
-                            <div class="telemetry-value" id="statDeliveredFps" style="color: var(--accent-cyan);">60.0 FPS</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Network Latency</div>
-                            <div class="telemetry-value" id="statRtt">1 ms (LAN)</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Host Dropped</div>
-                            <div class="telemetry-value" id="statDroppedFrames">0</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Encoder Load</div>
-                            <div class="telemetry-value" id="statEncoderStatus" style="color: var(--accent-green);">NVENC OK</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">IDR Keyframes</div>
-                            <div class="telemetry-value" id="statKeyframes" style="color: var(--accent-cyan);">0 IDRs</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Phone Decoded</div>
-                            <div class="telemetry-value" id="statClientRes" style="color: var(--accent-green);">Awaiting...</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Phone Jitter Buf</div>
-                            <div class="telemetry-value" id="statClientJitter">0 ms</div>
+                        <!-- Live Stream Telemetry Grid (Honest Diagnostics: Target vs Actual) -->
+                        <div class="telemetry-grid">
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Target FPS</div>
+                                <div class="telemetry-value" id="statTargetFps">60 FPS</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Delivered FPS</div>
+                                <div class="telemetry-value" id="statDeliveredFps" style="color: var(--accent-cyan);">60.0 FPS</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Network Latency</div>
+                                <div class="telemetry-value" id="statRtt">1 ms (LAN)</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Host Dropped</div>
+                                <div class="telemetry-value" id="statDroppedFrames">0</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Encoder Load</div>
+                                <div class="telemetry-value" id="statEncoderStatus" style="color: var(--accent-green);">NVENC OK</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">IDR Keyframes</div>
+                                <div class="telemetry-value" id="statKeyframes" style="color: var(--accent-cyan);">0 IDRs</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Phone Decoded</div>
+                                <div class="telemetry-value" id="statClientRes" style="color: var(--accent-green);">Awaiting...</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Phone Jitter Buf</div>
+                                <div class="telemetry-value" id="statClientJitter">0 ms</div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Stream Resolution & Native Phone Display Match (Locks Maximum Crisp Detail) -->
                 <section class="card" id="cardResolutionEngine" aria-labelledby="headingResolution">
-                    <div class="card-header">
+                    <div class="card-header is-collapsible" data-target="cardResolutionEngine">
                         <div>
                             <h2 class="card-title" id="headingResolution" style="color: var(--accent-green);">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -212,53 +243,60 @@
                             </h2>
                             <p class="card-subtitle">Locks 1:1 pixel scaling (scaleResolutionDownBy = 1.0) so WebRTC never downscales your stream to 720p. Matches phone screen for ultra-crisp textures.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Auto-Detected Phone Display Box -->
-                    <div id="boxDetectedPhone" style="background: rgba(0, 255, 170, 0.05); border: 1px solid rgba(0, 255, 170, 0.25); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                        <div>
-                            <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">📱 Connected Phone Physical Display:</span>
-                            <strong id="valPhoneDetected" style="font-size: 0.95rem; color: var(--accent-green);">Awaiting phone connection...</strong>
+                    <div class="card-body">
+                        <!-- Auto-Detected Phone Display Box -->
+                        <div id="boxDetectedPhone" style="background: rgba(0, 255, 170, 0.05); border: 1px solid rgba(0, 255, 170, 0.25); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">📱 Connected Phone Physical Display:</span>
+                                <strong id="valPhoneDetected" style="font-size: 0.95rem; color: var(--accent-green);">Awaiting phone connection...</strong>
+                            </div>
+                            <button class="btn-micro" id="btnApplyPhoneRes" style="display: none; background: var(--accent-green); color: #000; font-weight: 600; padding: 6px 12px; border-radius: var(--radius-sm);" title="Match Phone Physical Resolution">⚡ Match Phone Screen</button>
                         </div>
-                        <button class="btn-micro" id="btnApplyPhoneRes" style="display: none; background: var(--accent-green); color: #000; font-weight: 600; padding: 6px 12px; border-radius: var(--radius-sm);" title="Match Phone Physical Resolution">⚡ Match Phone Screen</button>
-                    </div>
 
-                    <!-- Resolution Target Presets -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Stream Resolution Target:</span>
-                            <span class="setting-val" id="valCurrentRes" style="color: var(--accent-green);">2560 × 1440 (Native 2K QHD Match)</span>
+                        <!-- Resolution Target Presets -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Stream Resolution Target:</span>
+                                <span class="setting-val" id="valCurrentRes" style="color: var(--accent-green);">2560 × 1440 (Native 2K QHD Match)</span>
+                            </div>
+                            <div class="presets-row" style="margin-top: 6px;">
+                                <button class="preset-btn active" id="btnRes2k" data-w="2560" data-h="1440">💎 2K QHD Native (2560×1440)</button>
+                                <button class="preset-btn" id="btnResPhoneUltra" data-w="2400" data-h="1080">📱 Phone Ultra (2400×1080)</button>
+                                <button class="preset-btn" id="btnRes1080p" data-w="1920" data-h="1080">🖥️ 1080p FHD (1920×1080)</button>
+                                <button class="preset-btn" id="btnResPhone3k" data-w="3200" data-h="1440">🌟 Phone 3K+ (3200×1440)</button>
+                                <button class="preset-btn" id="btnRes4k" data-w="3840" data-h="2160">👑 4K UHD (3840×2160)</button>
+                            </div>
                         </div>
-                        <div class="presets-row" style="margin-top: 6px;">
-                            <button class="preset-btn active" id="btnRes2k" data-w="2560" data-h="1440">💎 2K QHD Native (2560×1440)</button>
-                            <button class="preset-btn" id="btnResPhoneUltra" data-w="2400" data-h="1080">📱 Phone Ultra (2400×1080)</button>
-                            <button class="preset-btn" id="btnRes1080p" data-w="1920" data-h="1080">🖥️ 1080p FHD (1920×1080)</button>
-                            <button class="preset-btn" id="btnResPhone3k" data-w="3200" data-h="1440">🌟 Phone 3K+ (3200×1440)</button>
-                            <button class="preset-btn" id="btnRes4k" data-w="3840" data-h="2160">👑 4K UHD (3840×2160)</button>
-                        </div>
-                    </div>
 
-                    <!-- Custom Resolution Input -->
-                    <div class="setting-item" style="margin-top: 8px;">
-                        <div class="setting-header">
-                            <span class="setting-name">Custom Phone Display Resolution:</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <span style="font-size: 0.8rem; color: var(--text-muted);">W:</span>
-                            <input type="number" id="inputCustomWidth" value="2400" min="720" max="7680" step="10" style="width: 90px; padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem;" aria-label="Custom Width">
-                            <span style="font-size: 0.8rem; color: var(--text-muted);">× H:</span>
-                            <input type="number" id="inputCustomHeight" value="1080" min="480" max="4320" step="10" style="width: 90px; padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem;" aria-label="Custom Height">
-                            <button class="btn-micro" id="btnApplyCustomRes" style="padding: 6px 12px; font-weight: 600;">Apply Custom</button>
-                        </div>
-                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">
-                            🔒 Locked with <code>scaleResolutionDownBy = 1.0</code> to eliminate WebRTC automatic downscaling.
+                        <!-- Custom Resolution Input -->
+                        <div class="setting-item" style="margin-top: 8px;">
+                            <div class="setting-header">
+                                <span class="setting-name">Custom Phone Display Resolution:</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">W:</span>
+                                <input type="number" id="inputCustomWidth" value="2400" min="720" max="7680" step="10" style="width: 90px; padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem;" aria-label="Custom Width">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">× H:</span>
+                                <input type="number" id="inputCustomHeight" value="1080" min="480" max="4320" step="10" style="width: 90px; padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.82rem;" aria-label="Custom Height">
+                                <button class="btn-micro" id="btnApplyCustomRes" style="padding: 6px 12px; font-weight: 600;">Apply Custom</button>
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">
+                                🔒 Locked with <code>scaleResolutionDownBy = 1.0</code> to eliminate WebRTC automatic downscaling.
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- LAN Gaming Ultra-Low Latency Engine (Steam Link / Moonlight Profile) -->
                 <section class="card" id="cardLanEngine" aria-labelledby="headingLan">
-                    <div class="card-header">
+                    <div class="card-header is-collapsible" data-target="cardLanEngine">
                         <div>
                             <h2 class="card-title" id="headingLan">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -268,56 +306,63 @@
                             </h2>
                             <p class="card-subtitle">Optimized for local 5GHz Wi-Fi / gigabit LAN. Prioritizes zero packet queuing for instantaneous steering response.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- LAN Bitrate Preset Row -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">LAN Streaming Profile:</span>
+                    <div class="card-body">
+                        <!-- LAN Bitrate Preset Row -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">LAN Streaming Profile:</span>
+                            </div>
+                            <div class="presets-row" style="margin-top: 4px;">
+                                <button class="preset-btn" id="btnPresetSteamLink" data-bitrate="38">⚡ Esports Zero-Delay (38M)</button>
+                                <button class="preset-btn active" id="btnPresetMoonlight" data-bitrate="65">🎮 Balanced LAN (65M)</button>
+                                <button class="preset-btn" id="btnPresetExtreme" data-bitrate="100">🚀 High Bitrate (100M)</button>
+                                <button class="preset-btn" id="btnPresetMax" data-bitrate="180">🔥 Max Gigabit (180M)</button>
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">
+                                💡 <strong>Zero-Latency Tip:</strong> For instant steering response (Assetto Corsa / racing sims), <strong>38 - 65 Mbps</strong> guarantees zero network buffer queuing. Bitrates &gt;100 Mbps require strong 5GHz Wi-Fi 6.
+                            </div>
                         </div>
-                        <div class="presets-row" style="margin-top: 4px;">
-                            <button class="preset-btn" id="btnPresetSteamLink" data-bitrate="38">⚡ Esports Zero-Delay (38M)</button>
-                            <button class="preset-btn active" id="btnPresetMoonlight" data-bitrate="65">🎮 Balanced LAN (65M)</button>
-                            <button class="preset-btn" id="btnPresetExtreme" data-bitrate="100">🚀 High Bitrate (100M)</button>
-                            <button class="preset-btn" id="btnPresetMax" data-bitrate="180">🔥 Max Gigabit (180M)</button>
-                        </div>
-                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">
-                            💡 <strong>Zero-Latency Tip:</strong> For instant steering response (Assetto Corsa / racing sims), <strong>38 - 65 Mbps</strong> guarantees zero network buffer queuing. Bitrates &gt;100 Mbps require strong 5GHz Wi-Fi 6.
-                        </div>
-                    </div>
 
-                    <!-- Live LAN Bitrate Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">LAN Bandwidth Allocation:</span>
-                            <span class="setting-val" id="valLanBitrate">65 Mbps</span>
+                        <!-- Live LAN Bitrate Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">LAN Bandwidth Allocation:</span>
+                                <span class="setting-val" id="valLanBitrate">65 Mbps</span>
+                            </div>
+                            <input type="range" id="rangeLanBitrate" min="15" max="250" step="5" value="65" aria-label="LAN Bandwidth">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+                                <span>15 Mbps</span>
+                                <span>65 Mbps (Zero Queue)</span>
+                                <span>100 Mbps</span>
+                                <span>250 Mbps (Gigabit)</span>
+                            </div>
                         </div>
-                        <input type="range" id="rangeLanBitrate" min="15" max="250" step="5" value="65" aria-label="LAN Bandwidth">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
-                            <span>15 Mbps</span>
-                            <span>65 Mbps (Zero Queue)</span>
-                            <span>100 Mbps</span>
-                            <span>250 Mbps (Gigabit)</span>
-                        </div>
-                    </div>
 
-                    <!-- Telemetry & Status Badges -->
-                    <div class="telemetry-grid">
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">LAN Throughput</div>
-                            <div class="telemetry-value" id="statLiveThroughput">75 Mbps (Ready)</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Jitter Buffer</div>
-                            <div class="telemetry-value" id="statJitterBuffer">0 ms (Bypassed)</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Hardware Codec</div>
-                            <div class="telemetry-value" id="statCodec" style="color: var(--accent-cyan);">H.264 NVENC</div>
-                        </div>
-                        <div class="telemetry-badge">
-                            <div class="telemetry-label">Control Transport</div>
-                            <div class="telemetry-value" id="statDataChannel">UDP DataChannel</div>
+                        <!-- Telemetry & Status Badges -->
+                        <div class="telemetry-grid">
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">LAN Throughput</div>
+                                <div class="telemetry-value" id="statLiveThroughput">75 Mbps (Ready)</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Jitter Buffer</div>
+                                <div class="telemetry-value" id="statJitterBuffer">0 ms (Bypassed)</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Hardware Codec</div>
+                                <div class="telemetry-value" id="statCodec" style="color: var(--accent-cyan);">H.264 NVENC</div>
+                            </div>
+                            <div class="telemetry-badge">
+                                <div class="telemetry-label">Control Transport</div>
+                                <div class="telemetry-value" id="statDataChannel">UDP DataChannel</div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -327,7 +372,7 @@
             <div class="col-controls">
                 <!-- Live VR Display & Lens Calibration Card -->
                 <section class="card" id="cardVrCalibration" aria-labelledby="headingVrCalib">
-                    <div class="card-header">
+                    <div class="card-header is-collapsible" data-target="cardVrCalibration">
                         <div>
                             <h2 class="card-title" id="headingVrCalib">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -337,133 +382,356 @@
                             </h2>
                             <p class="card-subtitle">Tune viewport separation, stereoscopic convergence, and display modes live while wearing the headset.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- VR Viewing Mode Switcher -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">VR Display Mode:</span>
-                            <span class="setting-val" id="valVrMode">🚀 FPV 180° Game Dome</span>
-                        </div>
-                        <div class="presets-row">
-                            <button class="preset-btn active" id="btnModeDome" data-mode="dome" title="Focused 135° Dome (50% higher center sharpness for racing sims)">🏎️ Sim Crisp (135°)</button>
-                            <button class="preset-btn" id="btnModeDomeWide" data-mode="dome_wide" title="Wide 195° Dome">🌐 Wide (195°)</button>
-                            <button class="preset-btn" id="btnModeCinema" data-mode="cinema">🎬 Virtual Cinema</button>
-                            <button class="preset-btn" id="btnModeSbs" data-mode="sbs">👓 3D SBS</button>
-                        </div>
-                    </div>
-
-                    <!-- Virtual Cinema & Movie Screen Geometry (Distance, Size, Elevation, Curve) -->
-                    <div class="setting-item" id="sectionCinemaControls" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: var(--radius-md); padding: 14px; margin-top: 14px; margin-bottom: 14px;">
-                        <div class="setting-header" style="margin-bottom: 6px;">
-                            <span class="setting-name" style="color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                                🎬 Movie Theater & Screen Geometry
-                            </span>
-                            <button id="btnToggleCurved" class="preset-btn active" style="font-size: 0.74rem; padding: 3px 10px;">🌐 Curved IMAX Screen</button>
-                        </div>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
-                            Push the movie screen further backwards for a true theater perspective or make it huge. Controls sync live to your phone.
-                        </p>
-
-                        <!-- Quick Movie Experience Presets -->
-                        <div class="presets-row" style="margin-bottom: 12px;">
-                            <button class="preset-btn" id="btnPresetCinemaGrand" title="Huge Colossal Theater Screen in the Distance">🏛️ Grand Colossal (15.0m)</button>
-                            <button class="preset-btn active" id="btnPresetCinemaImax" title="Giant Curved IMAX Screen">🌌 Giant IMAX (8.0m)</button>
-                            <button class="preset-btn" id="btnPresetCinemaClassic" title="Standard Movie Theater Screen">🎬 Classic (4.5m)</button>
-                            <button class="preset-btn" id="btnPresetCinemaCozy" title="Closer Cozy Theater Screen">🍿 Cozy (2.4m)</button>
-                            <button class="preset-btn" id="btnPresetCinemaDesktop" title="Flat Floating PC Monitor">💻 Floating PC (1.8m)</button>
-                        </div>
-
-                        <!-- Screen Distance (Depth / Backwards) -->
-                        <div class="setting-header" style="margin-top: 8px;">
-                            <span class="setting-name">Screen Distance (Backwards / Forward):</span>
-                            <span class="setting-val" id="valCinemaDistance">4.5 m</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <button class="btn-micro" id="btnDistCloser" title="Move 0.5m Closer">◀ Closer</button>
-                            <input type="range" id="rangeCinemaDistance" min="1.0" max="50.0" step="0.2" value="4.5" style="flex: 1;" aria-label="Screen Distance in Meters">
-                            <button class="btn-micro" id="btnDistFarther" title="Push 0.5m Further Back">Further Back ▶</button>
-                            <button class="btn-micro" id="btnDistReset" title="Reset Distance to 4.5m">4.5m</button>
-                        </div>
-
-                        <!-- Screen Size / Scale (Larger / Smaller) -->
-                        <div class="setting-header" style="margin-top: 12px;">
-                            <span class="setting-name">Screen Size / Scale (Larger / Smaller):</span>
-                            <span class="setting-val" id="valCinemaScale">140%</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <button class="btn-micro" id="btnScaleDown" title="Decrease Size by 10%">➖ Smaller</button>
-                            <input type="range" id="rangeCinemaScale" min="50" max="800" step="5" value="140" style="flex: 1;" aria-label="Screen Scale Percentage">
-                            <button class="btn-micro" id="btnScaleUp" title="Increase Size by 10%">➕ Bigger</button>
-                            <button class="btn-micro" id="btnScaleReset" title="Reset Size to 140%">140%</button>
-                        </div>
-
-                        <!-- Screen Elevation (Higher / Lower) -->
-                        <div class="setting-header" style="margin-top: 12px;">
-                            <span class="setting-name">Screen Elevation (Higher / Lower):</span>
-                            <span class="setting-val" id="valCinemaElevation">0.0 m</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <button class="btn-micro" id="btnElevDown" title="Lower by 0.1m">⬇ Lower</button>
-                            <input type="range" id="rangeCinemaElevation" min="-2.0" max="2.0" step="0.1" value="0.0" style="flex: 1;" aria-label="Screen Elevation">
-                            <button class="btn-micro" id="btnElevUp" title="Raise by 0.1m">Higher ⬆</button>
-                            <button class="btn-micro" id="btnElevReset" title="Reset Elevation to Level">Level</button>
-                        </div>
-                    </div>
-
-                    <!-- HDR / SDR Dynamic Range & Clipping Inspector (Evidence-Based Diagnostics) -->
-                    <div class="setting-item" id="sectionHdrInspector" style="border: 1px solid rgba(56, 189, 248, 0.28); background: rgba(56, 189, 248, 0.04); border-radius: var(--radius-md); padding: 12px 14px; margin-top: 14px; margin-bottom: 12px;">
-                        <div class="setting-header" style="margin-bottom: 6px;">
-                            <span class="setting-name" style="color: #38bdf8; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                                🔍 Video Dynamic Range & Clipping Inspector
-                            </span>
-                            <span id="badgeCaptureColorSpace" style="font-size: 0.72rem; color: #a5f3fc; font-family: var(--font-mono); background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.3);">8-bit sRGB / Rec.709 (Chromium SDR)</span>
-                        </div>
-                        <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
-                            Live pixel luminance analysis of captured frames. Directly proves whether highlights are being clipped by Windows/Chromium desktop capture or blacks are lifted.
-                        </p>
-
-                        <!-- Telemetry Badges -->
-                        <div class="telemetry-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 8px;">
-                            <div class="telemetry-badge">
-                                <div class="telemetry-label">Clipped Highlights</div>
-                                <div class="telemetry-value" id="statClipPct" style="color: var(--accent-green);">0.0% (Clean)</div>
+                    <div class="card-body">
+                        <!-- VR Viewing Mode Switcher -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">VR Display Mode:</span>
+                                <span class="setting-val" id="valVrMode">🚀 FPV 180° Game Dome</span>
                             </div>
-                            <div class="telemetry-badge">
-                                <div class="telemetry-label">Black Level Floor</div>
-                                <div class="telemetry-value" id="statBlackFloor" style="color: var(--accent-green);">0.0% (Inky)</div>
-                            </div>
-                            <div class="telemetry-badge">
-                                <div class="telemetry-label">Mean Scene Luma</div>
-                                <div class="telemetry-value" id="statAvgLuma">--%</div>
+                            <div class="presets-row">
+                                <button class="preset-btn active" id="btnModeDome" data-mode="dome" title="Focused 135° Dome (50% higher center sharpness for racing sims)">🏎️ Sim Crisp (135°)</button>
+                                <button class="preset-btn" id="btnModeDomeWide" data-mode="dome_wide" title="Wide 195° Dome">🌐 Wide (195°)</button>
+                                <button class="preset-btn" id="btnModeCinema" data-mode="cinema">🎬 Virtual Cinema</button>
+                                <button class="preset-btn" id="btnModeSbs" data-mode="sbs">👓 3D SBS</button>
                             </div>
                         </div>
 
-                        <!-- Real-time Warning Banner if Windows HDR clipping occurs -->
-                        <div id="bannerHdrClippingAlert" style="display: none; background: rgba(239, 68, 68, 0.12); border-left: 3px solid #ef4444; padding: 8px 12px; border-radius: 4px; font-size: 0.74rem; color: #fecaca; line-height: 1.45;">
+                        <!-- Virtual Cinema & Movie Screen Geometry (Distance, Size, Elevation, Curve) -->
+                        <div class="setting-item collapsible-subcard" id="sectionCinemaControls" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: var(--radius-md); padding: 14px; margin-top: 14px; margin-bottom: 14px;">
+                            <div class="subcard-header is-collapsible" data-target="sectionCinemaControls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span class="setting-name" style="color: var(--accent-cyan); font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                        🎬 Movie Theater & Screen Geometry
+                                    </span>
+                                    <button id="btnToggleCurved" class="preset-btn active" style="font-size: 0.74rem; padding: 3px 10px;">🌐 Curved IMAX Screen</button>
+                                </div>
+                                <button class="card-toggle-arrow" aria-label="Toggle Movie Theater Section">
+                                    <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="subcard-body">
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                                    Push the movie screen further backwards for a true theater perspective or make it huge. Controls sync live to your phone.
+                                </p>
+
+                                <!-- Quick Movie Experience Presets -->
+                                <div class="presets-row" style="margin-bottom: 12px;">
+                                    <button class="preset-btn" id="btnPresetCinemaGrand" title="Huge Colossal Theater Screen in the Distance">🏛️ Grand Colossal (15.0m)</button>
+                                    <button class="preset-btn active" id="btnPresetCinemaImax" title="Giant Curved IMAX Screen">🌌 Giant IMAX (8.0m)</button>
+                                    <button class="preset-btn" id="btnPresetCinemaClassic" title="Standard Movie Theater Screen">🎬 Classic (4.5m)</button>
+                                    <button class="preset-btn" id="btnPresetCinemaCozy" title="Closer Cozy Theater Screen">🍿 Cozy (2.4m)</button>
+                                    <button class="preset-btn" id="btnPresetCinemaDesktop" title="Flat Floating PC Monitor">💻 Floating PC (1.8m)</button>
+                                </div>
+
+                                <!-- Screen Distance (Depth / Backwards) -->
+                                <div class="setting-header" style="margin-top: 8px;">
+                                    <span class="setting-name">Screen Distance (Backwards / Forward):</span>
+                                    <span class="setting-val" id="valCinemaDistance">4.5 m</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                    <button class="btn-micro" id="btnDistCloser" title="Move 0.5m Closer">◀ Closer</button>
+                                    <input type="range" id="rangeCinemaDistance" min="1.0" max="50.0" step="0.2" value="4.5" style="flex: 1;" aria-label="Screen Distance in Meters">
+                                    <button class="btn-micro" id="btnDistFarther" title="Push 0.5m Further Back">Further Back ▶</button>
+                                    <button class="btn-micro" id="btnDistReset" title="Reset Distance to 4.5m">4.5m</button>
+                                </div>
+
+                                <!-- Screen Size / Scale (Larger / Smaller) -->
+                                <div class="setting-header" style="margin-top: 12px;">
+                                    <span class="setting-name">Screen Size / Scale (Larger / Smaller):</span>
+                                    <span class="setting-val" id="valCinemaScale">140%</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                    <button class="btn-micro" id="btnScaleDown" title="Decrease Size by 10%">➖ Smaller</button>
+                                    <input type="range" id="rangeCinemaScale" min="50" max="800" step="5" value="140" style="flex: 1;" aria-label="Screen Scale Percentage">
+                                    <button class="btn-micro" id="btnScaleUp" title="Increase Size by 10%">➕ Bigger</button>
+                                    <button class="btn-micro" id="btnScaleReset" title="Reset Size to 140%">140%</button>
+                                </div>
+
+                                <!-- Screen Elevation (Higher / Lower) -->
+                                <div class="setting-header" style="margin-top: 12px;">
+                                    <span class="setting-name">Screen Elevation (Higher / Lower):</span>
+                                    <span class="setting-val" id="valCinemaElevation">0.0 m</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                    <button class="btn-micro" id="btnElevDown" title="Lower by 0.1m">⬇ Lower</button>
+                                    <input type="range" id="rangeCinemaElevation" min="-2.0" max="2.0" step="0.1" value="0.0" style="flex: 1;" aria-label="Screen Elevation">
+                                    <button class="btn-micro" id="btnElevUp" title="Raise by 0.1m">Higher ⬆</button>
+                                    <button class="btn-micro" id="btnElevReset" title="Reset Elevation to Level">Level</button>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- HDR / SDR Dynamic Range & Clipping Inspector (Evidence-Based Diagnostics) -->
+                        <div class="setting-item collapsible-subcard" id="sectionHdrInspector" style="border: 1px solid rgba(56, 189, 248, 0.28); background: rgba(56, 189, 248, 0.04); border-radius: var(--radius-md); padding: 12px 14px; margin-top: 14px; margin-bottom: 12px;">
+                            <div class="subcard-header is-collapsible" data-target="sectionHdrInspector" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span class="setting-name" style="color: #38bdf8; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                        🔍 Video Dynamic Range & Clipping Inspector
+                                    </span>
+                                    <span id="badgeCaptureColorSpace" style="font-size: 0.72rem; color: #a5f3fc; font-family: var(--font-mono); background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.3);">8-bit sRGB / Rec.709 (Chromium SDR)</span>
+                                </div>
+                                <button class="card-toggle-arrow" aria-label="Toggle HDR Inspector Section">
+                                    <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="subcard-body">
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                                    Live pixel luminance analysis of captured frames. Directly proves whether highlights are being clipped by Windows/Chromium desktop capture or blacks are lifted.
+                                </p>
+
+                                <!-- Telemetry Badges -->
+                                <div class="telemetry-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 8px;">
+                                    <div class="telemetry-badge">
+                                        <div class="telemetry-label">Clipped Highlights</div>
+                                        <div class="telemetry-value" id="statClipPct" style="color: var(--accent-green);">0.0% (Clean)</div>
+                                    </div>
+                                    <div class="telemetry-badge">
+                                        <div class="telemetry-label">Black Level Floor</div>
+                                        <div class="telemetry-value" id="statBlackFloor" style="color: var(--accent-green);">0.0% (Inky)</div>
+                                    </div>
+                                    <div class="telemetry-badge">
+                                        <div class="telemetry-label">Mean Scene Luma</div>
+                                        <div class="telemetry-value" id="statAvgLuma">--%</div>
+                                    </div>
+                                </div>
+
+                                <!-- Real-time Warning Banner if Windows HDR clipping occurs -->
+                                <div id="bannerHdrClippingAlert" style="display: none; background: rgba(239, 68, 68, 0.12); border-left: 3px solid #ef4444; padding: 8px 12px; border-radius: 4px; font-size: 0.74rem; color: #fecaca; line-height: 1.45;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Visual Fidelity & Tone Mapping Engine -->
+                        <div class="setting-item collapsible-subcard" id="sectionTrueColor" style="border: 1px solid rgba(0, 255, 170, 0.22); background: rgba(0, 255, 170, 0.04); border-radius: var(--radius-md); padding: 14px; margin-top: 14px;">
+                            <div class="subcard-header is-collapsible" data-target="sectionTrueColor" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span class="setting-name" style="color: var(--accent-green); font-weight: 600;">✨ True Color & Anti-Washout Tone Mapping</span>
+                                    <span class="status-value badge-connected" style="font-size: 0.7rem;">Active (0ms ALU)</span>
+                                </div>
+                                <button class="card-toggle-arrow" aria-label="Toggle True Color Tone Mapping Section">
+                                    <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="subcard-body">
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 10px;">
+                                    Eliminates blown-out white windshields in Assetto Corsa and Euro Truck Simulator by cutting road glare and recovering rich tarmac textures without darkening car interiors.
+                                </p>
+
+                                <!-- Quick Color Presets (Clean Responsive Grid Layout - No Overflow) -->
+                                <div class="color-presets-row" style="margin-bottom: 12px;">
+                                    <button class="preset-btn active" id="btnPresetRefColor" title="1:1 Identical match to your PC monitor - zero degradation, untouched contrast">🖥️ 1:1 Monitor True Color (Reference)</button>
+                                    <button class="preset-btn" id="btnPresetHdrRecovery" title="Softens hard-clipped 240-255 highlights when Windows HDR is ON, restoring road and building details">☀️ Windows HDR Highlight Recovery</button>
+                                    <button class="preset-btn" id="btnPresetFullRange" title="Removes Chromium Studio Range 16-235 grey haze, restoring inky blacks and specular whites">⬛ Studio to Full Range (Inky Blacks)</button>
+                                    <button class="preset-btn" id="btnPresetFixRoad" title="Deep dark asphalt road without white windshield blowout">🏎️ Windscreen Anti-Glare</button>
+                                    <button class="preset-btn" id="btnPresetCinemaColor" title="Natural balanced cinema colors">🎬 Natural Cinema</button>
+                                    <button class="preset-btn" id="btnPresetVibrantGame" title="Punchy high-contrast gaming">🎮 Vibrant Pop</button>
+                                    <button class="preset-btn" id="btnPresetNightBoost" title="Night racing and dark interiors boost">🌑 Night / Tunnel Boost</button>
+                                </div>
+
+                                <!-- 1. Windshield Glare / Highlight Roll-off (Anti-Washout) -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Blinding Windshield & Road Glare Cut:</span>
+                                    <span class="setting-val" id="valHighlightCut" style="color: var(--accent-green);">0% (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeHighlightCut" min="0.00" max="0.75" step="0.05" value="0.00" style="flex: 1;" aria-label="Windshield Glare Cut">
+                                    <button class="btn-micro" id="btnHighlightCutDefault" title="Reset Glare Cut to 0%">0%</button>
+                                </div>
+
+                                <!-- 2. Daylight Exposure Multiplier -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Daylight Exposure Multiplier:</span>
+                                    <span class="setting-val" id="valExposure">1.00x (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeExposure" min="0.40" max="1.60" step="0.05" value="1.00" style="flex: 1;" aria-label="Daylight Exposure">
+                                    <button class="btn-micro" id="btnExposureDefault" title="Reset Exposure to 1.00x">1.00x</button>
+                                </div>
+
+                                <!-- 3. Cockpit Shadow Boost -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Cockpit Interior & Gauge Boost:</span>
+                                    <span class="setting-val" id="valShadowBoost">0% (1:1 True Black)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeShadowBoost" min="0.00" max="0.40" step="0.02" value="0.00" style="flex: 1;" aria-label="Cockpit Shadow Boost">
+                                    <button class="btn-micro" id="btnShadowBoostDefault" title="Reset Shadow Boost to 0%">0%</button>
+                                </div>
+
+                                <!-- 4. Gamma (Road Depth & Dark Asphalt) -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Road Depth & Dark Asphalt (Gamma):</span>
+                                    <span class="setting-val" id="valGamma">1.00 (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeGamma" min="0.60" max="2.20" step="0.05" value="1.00" style="flex: 1;" aria-label="Road Depth Gamma">
+                                    <button class="btn-micro" id="btnGammaDefault" title="Reset Gamma to 1.00">1.00</button>
+                                </div>
+
+                                <!-- 5. Black Level / Brightness -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Black Level Offset (Brightness):</span>
+                                    <span class="setting-val" id="valBrightness">0% (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeBrightness" min="-0.20" max="0.20" step="0.01" value="0.00" style="flex: 1;" aria-label="Black Level Brightness">
+                                    <button class="btn-micro" id="btnBrightnessDefault" title="Reset Brightness to 0%">0%</button>
+                                </div>
+
+                                <!-- 6. Dynamic Contrast -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Game Dynamic Contrast:</span>
+                                    <span class="setting-val" id="valContrast">0% (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
+                                    <input type="range" id="rangeContrast" min="0.80" max="1.60" step="0.02" value="1.00" style="flex: 1;" aria-label="Game Dynamic Contrast">
+                                    <button class="btn-micro" id="btnContrastDefault" title="Reset Contrast to 0%">0%</button>
+                                </div>
+
+                                <!-- 7. Color Saturation & Vibrance -->
+                                <div class="setting-header">
+                                    <span class="setting-name" style="font-size: 0.8rem;">Color Saturation & Vibrance:</span>
+                                    <span class="setting-val" id="valSaturation">0% (1:1 Reference)</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
+                                    <input type="range" id="rangeSaturation" min="0.50" max="2.20" step="0.05" value="1.00" style="flex: 1;" aria-label="Color Saturation">
+                                    <button class="btn-micro" id="btnSaturationDefault" title="Reset Saturation to 0%">0%</button>
+                                </div>
+
+                                <!-- Assetto Corsa & ETS2 Hotkey Tip -->
+                                <div style="background: rgba(0, 180, 255, 0.08); border-left: 3px solid var(--accent-cyan); padding: 8px 12px; border-radius: 4px; margin-top: 12px; font-size: 0.74rem; color: #d0e8ff; line-height: 1.45;">
+                                    <strong>💡 Pro Sim-Racer Tip:</strong> In Assetto Corsa cockpit view, the camera auto-exposes for dark seats, blowing out the windshield. Press <strong>Page Down</strong> on your PC keyboard inside Assetto Corsa to immediately lower cockpit camera exposure until outdoor tarmac and sky look 100% photo-realistic!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Center Separator Live Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Center Split / Separator Line:</span>
+                                <span class="setting-val" id="valCenterSplit">50.0%</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button class="btn-micro" id="btnNudgeLeft" title="Nudge 0.2% Left">◀ Left</button>
+                                <input type="range" id="rangeCenterSplit" min="40.0" max="60.0" step="0.1" value="50.0" style="flex: 1;" aria-label="Center Split">
+                                <button class="btn-micro" id="btnNudgeRight" title="Nudge 0.2% Right">Right ▶</button>
+                                <button class="btn-micro" id="btnResetSplit" title="Reset to 50.0%">50%</button>
+                            </div>
+                        </div>
+
+                        <!-- Lens Optical Offset / Convergence Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Horizontal Lens Convergence:</span>
+                                <span class="setting-val" id="valLensOffset">0.0 mm</span>
+                            </div>
+                            <input type="range" id="rangeLensOffset" min="-15" max="15" step="0.5" value="0.0" aria-label="Lens Offset">
+                        </div>
+
+                        <!-- IPD Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">IPD (Lens Distance):</span>
+                                <span class="setting-val" id="valHostIpd">63 mm</span>
+                            </div>
+                            <input type="range" id="rangeHostIpd" min="50" max="75" step="1" value="63" aria-label="Interpupillary Distance">
+                        </div>
+
+                        <!-- FPV FOV Slider -->
+                        <div class="setting-item" id="itemFpvFov">
+                            <div class="setting-header">
+                                <span class="setting-name">FPV Game Immersion FOV:</span>
+                                <span class="setting-val" id="valFpvFov">105°</span>
+                            </div>
+                            <input type="range" id="rangeFpvFov" min="80" max="120" step="1" value="105" aria-label="Field of View">
+                        </div>
+
+                        <!-- Double Vision Fix: Stereoscopic Image Alignment -->
+                        <hr class="divider">
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name" style="color: var(--accent-green);">👁️ Double Vision Fix (Stereoscopic Image Convergence):</span>
+                            </div>
+                            <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.45;">
+                                Adjust while looking through your VR headset until both eyes fuse into <strong>ONE clear unified 3D view</strong> without overlap, then click Save.
+                            </div>
+
+                            <!-- Horizontal Image Convergence -->
+                            <div class="setting-header">
+                                <span class="setting-name">Horizontal Convergence (Merge In / Out):</span>
+                                <span class="setting-val" id="valShiftX">0.0 mm</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                <button class="btn-micro" id="btnShiftXIn" title="Merge Inward">◀ Merge In</button>
+                                <input type="range" id="rangeShiftX" min="-30.0" max="30.0" step="0.5" value="0.0" style="flex: 1;" aria-label="Horizontal Convergence">
+                                <button class="btn-micro" id="btnShiftXOut" title="Merge Outward">Merge Out ▶</button>
+                                <button class="btn-micro" id="btnShiftXReset" title="Reset to 0.0">0</button>
+                            </div>
+
+                            <!-- Vertical Alignment (Y-Shift) -->
+                            <div class="setting-header" style="margin-top: 10px;">
+                                <span class="setting-name">Vertical Level Alignment (Y-Shift):</span>
+                                <span class="setting-val" id="valShiftY">0.0 mm</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                <button class="btn-micro" id="btnShiftYDown" title="Shift Down">⬇ Lower</button>
+                                <input type="range" id="rangeShiftY" min="-15.0" max="15.0" step="0.5" value="0.0" style="flex: 1;" aria-label="Vertical Alignment">
+                                <button class="btn-micro" id="btnShiftYUp" title="Shift Up">Raise ⬆</button>
+                                <button class="btn-micro" id="btnShiftYReset" title="Reset to 0.0">0</button>
+                            </div>
+
+                            <button id="btnSaveCalibration" class="btn btn-secondary" style="width: 100%; margin-top: 12px; border-color: rgba(16, 185, 129, 0.4); color: var(--accent-green);">
+                                💾 Save Alignment as Default
+                            </button>
+                        </div>
+
+                        <!-- Remote Recenter -->
+                        <button id="btnRemoteRecenter" class="btn btn-secondary" style="margin-top: 12px; width: 100%;">
+                            🎯 Remote Recenter Phone VR Screen
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Gyroscope & Mouse Look Control Card -->
+                <section class="card" id="cardGyro" aria-labelledby="headingGyro">
+                    <div class="card-header is-collapsible" data-target="cardGyro">
+                        <div>
+                            <h2 class="card-title" id="headingGyro">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="22" y1="12" x2="18" y2="12"></line>
+                                    <line x1="6" y1="12" x2="2" y2="12"></line>
+                                    <line x1="12" y1="6" x2="12" y2="2"></line>
+                                    <line x1="12" y1="22" x2="12" y2="18"></line>
+                                </svg>
+                                Gyro Head Tracking & Mouse Look
+                            </h2>
+                            <p class="card-subtitle">Translates mobile phone motion sensor readings into real-time Windows mouse movements for PC gaming.</p>
+                        </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Game Visual Fidelity & Tone Mapping Engine -->
-                    <div class="setting-item" style="border: 1px solid rgba(0, 255, 170, 0.22); background: rgba(0, 255, 170, 0.04); border-radius: var(--radius-md); padding: 14px; margin-top: 14px;">
-                        <div class="setting-header" style="margin-bottom: 6px;">
-                            <span class="setting-name" style="color: var(--accent-green); font-weight: 600;">✨ True Color & Anti-Washout Tone Mapping</span>
-                            <span class="status-value badge-connected" style="font-size: 0.7rem;">Active (0ms ALU)</span>
-                        </div>
-                        <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 10px;">
-                            Eliminates blown-out white windshields in Assetto Corsa and Euro Truck Simulator by cutting road glare and recovering rich tarmac textures without darkening car interiors.
-                        </p>
-
-                        <!-- Quick Color Presets -->
-                        <div class="presets-row" style="margin-bottom: 12px;">
-                            <button class="preset-btn active" id="btnPresetRefColor" title="1:1 Identical match to your PC monitor - zero degradation, untouched contrast">🖥️ 1:1 Monitor True Color (Reference)</button>
-                            <button class="preset-btn" id="btnPresetHdrRecovery" title="Softens hard-clipped 240-255 highlights when Windows HDR is ON, restoring road and building details">☀️ Windows HDR Highlight Recovery</button>
-                            <button class="preset-btn" id="btnPresetFullRange" title="Removes Chromium Studio Range 16-235 grey haze, restoring inky blacks and specular whites">⬛ Studio to Full Range (Inky Blacks)</button>
-                            <button class="preset-btn" id="btnPresetFixRoad" title="Deep dark asphalt road without white windshield blowout">🏎️ Windscreen Anti-Glare</button>
-                            <button class="preset-btn" id="btnPresetCinemaColor" title="Natural balanced cinema colors">🎬 Natural Cinema</button>
-                            <button class="preset-btn" id="btnPresetVibrantGame" title="Punchy high-contrast gaming">🎮 Vibrant Pop</button>
-                            <button class="preset-btn" id="btnPresetNightBoost" title="Night racing and dark interiors boost">🌑 Night / Tunnel Boost</button>
-                        </div>
+                    <div class="card-body">
+                        <!-- Compass Visualizer -->
+                        <div class="visualizer-container">
 
                         <!-- 1. Windshield Glare / Highlight Roll-off (Anti-Washout) -->
                         <div class="setting-header">
@@ -625,11 +893,12 @@
                     <button id="btnRemoteRecenter" class="btn btn-secondary" style="margin-top: 12px; width: 100%;">
                         🎯 Remote Recenter Phone VR Screen
                     </button>
+                    </div>
                 </section>
 
                 <!-- Gyroscope & Mouse Look Control Card -->
-                <section class="card" aria-labelledby="headingGyro">
-                    <div class="card-header">
+                <section class="card" id="cardGyro" aria-labelledby="headingGyro">
+                    <div class="card-header is-collapsible" data-target="cardGyro">
                         <div>
                             <h2 class="card-title" id="headingGyro">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -643,83 +912,90 @@
                             </h2>
                             <p class="card-subtitle">Translates mobile phone motion sensor readings into real-time Windows mouse movements for PC gaming.</p>
                         </div>
+                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Compass Visualizer -->
-                    <div class="visualizer-container">
-                        <canvas id="gyroVisualizer"></canvas>
-                    </div>
-
-                    <!-- Master Toggle -->
-                    <div class="checkbox-row">
-                        <label class="checkbox-label" for="chkEnableMouseLook">
-                            <input type="checkbox" id="chkEnableMouseLook">
-                            <strong>Enable Gyro Mouse Look in Windows (For PC Games)</strong>
-                        </label>
-                    </div>
-
-                    <!-- Presets -->
-                    <div class="presets-row" style="margin-bottom: 16px;">
-                        <button class="preset-btn active" data-preset="sim" title="Instant Zero-Lag Head Tracking for Euro Truck Simulator & Racing">🚛 Truck/Racing Sim (0ms)</button>
-                        <button class="preset-btn" data-preset="fps" title="Low latency tracking with subtle jitter filtering">🎯 Fast FPS / Action</button>
-                        <button class="preset-btn" data-preset="cinema" title="Mouse look disabled for theater viewing">🎬 Movie Watching</button>
-                    </div>
-
-                    <!-- Yaw Sensitivity Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Yaw Sensitivity (Horizontal Look):</span>
-                            <span class="setting-val" id="valYawSens">2.0x</span>
+                    <div class="card-body">
+                        <!-- Compass Visualizer -->
+                        <div class="visualizer-container">
+                            <canvas id="gyroVisualizer"></canvas>
                         </div>
-                        <input type="range" id="rangeYawSens" min="0.2" max="6.0" step="0.1" value="2.0" aria-label="Yaw Sensitivity">
-                    </div>
 
-                    <!-- Pitch Sensitivity Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Pitch Sensitivity (Vertical Look):</span>
-                            <span class="setting-val" id="valPitchSens">1.8x</span>
+                        <!-- Master Toggle -->
+                        <div class="checkbox-row">
+                            <label class="checkbox-label" for="chkEnableMouseLook">
+                                <input type="checkbox" id="chkEnableMouseLook">
+                                <strong>Enable Gyro Mouse Look in Windows (For PC Games)</strong>
+                            </label>
                         </div>
-                        <input type="range" id="rangePitchSens" min="0.2" max="6.0" step="0.1" value="1.8" aria-label="Pitch Sensitivity">
-                    </div>
 
-                    <!-- Smoothing Slider & Quick Latency Presets -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Head Tracking Latency / Smoothing:</span>
-                            <span class="setting-val" id="valSmoothing">5%</span>
+                        <!-- Presets -->
+                        <div class="presets-row" style="margin-bottom: 16px;">
+                            <button class="preset-btn active" data-preset="sim" title="Instant Zero-Lag Head Tracking for Euro Truck Simulator & Racing">🚛 Truck/Racing Sim (0ms)</button>
+                            <button class="preset-btn" data-preset="fps" title="Low latency tracking with subtle jitter filtering">🎯 Fast FPS / Action</button>
+                            <button class="preset-btn" data-preset="cinema" title="Mouse look disabled for theater viewing">🎬 Movie Watching</button>
                         </div>
-                        <input type="range" id="rangeSmoothing" min="0" max="90" step="5" value="5" aria-label="Smoothing">
-                        <div class="presets-row" style="margin-top: 6px;">
-                            <button class="preset-btn active" id="btnSmooth0" data-smooth="0" title="Zero software lag - raw physical sensor motion">⚡ 0ms Raw (0%)</button>
-                            <button class="preset-btn" id="btnSmooth5" data-smooth="5" title="Recommended for Euro Truck Simulator & fast games">🎮 Gaming (5%)</button>
-                            <button class="preset-btn" id="btnSmooth20" data-smooth="20" title="Balanced casual look">🎯 Balanced (20%)</button>
-                            <button class="preset-btn" id="btnSmooth50" data-smooth="50" title="Heavy cinema stabilization">🎬 Cinema (50%)</button>
+
+                        <!-- Yaw Sensitivity Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Yaw Sensitivity (Horizontal Look):</span>
+                                <span class="setting-val" id="valYawSens">2.0x</span>
+                            </div>
+                            <input type="range" id="rangeYawSens" min="0.2" max="6.0" step="0.1" value="2.0" aria-label="Yaw Sensitivity">
                         </div>
-                    </div>
 
-                    <!-- Deadzone Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Micro-Movement Deadzone:</span>
-                            <span class="setting-val" id="valDeadzone">0.003°</span>
+                        <!-- Pitch Sensitivity Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Pitch Sensitivity (Vertical Look):</span>
+                                <span class="setting-val" id="valPitchSens">1.8x</span>
+                            </div>
+                            <input type="range" id="rangePitchSens" min="0.2" max="6.0" step="0.1" value="1.8" aria-label="Pitch Sensitivity">
                         </div>
-                        <input type="range" id="rangeDeadzone" min="0" max="0.05" step="0.001" value="0.003" aria-label="Deadzone">
-                    </div>
 
-                    <!-- Invert Checkboxes & Recenter Button -->
-                    <div class="checkbox-row" style="margin-top: 14px;">
-                        <label class="checkbox-label" for="chkInvertX">
-                            <input type="checkbox" id="chkInvertX"> Invert X (Yaw)
-                        </label>
-                        <label class="checkbox-label" for="chkInvertY">
-                            <input type="checkbox" id="chkInvertY"> Invert Y (Pitch)
-                        </label>
-                    </div>
+                        <!-- Smoothing Slider & Quick Latency Presets -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Head Tracking Latency / Smoothing:</span>
+                                <span class="setting-val" id="valSmoothing">5%</span>
+                            </div>
+                            <input type="range" id="rangeSmoothing" min="0" max="90" step="5" value="5" aria-label="Smoothing">
+                            <div class="presets-row" style="margin-top: 6px;">
+                                <button class="preset-btn active" id="btnSmooth0" data-smooth="0" title="Zero software lag - raw physical sensor motion">⚡ 0ms Raw (0%)</button>
+                                <button class="preset-btn" id="btnSmooth5" data-smooth="5" title="Recommended for Euro Truck Simulator & fast games">🎮 Gaming (5%)</button>
+                                <button class="preset-btn" id="btnSmooth20" data-smooth="20" title="Balanced casual look">🎯 Balanced (20%)</button>
+                                <button class="preset-btn" id="btnSmooth50" data-smooth="50" title="Heavy cinema stabilization">🎬 Cinema (50%)</button>
+                            </div>
+                        </div>
 
-                    <button id="btnRecenter" class="btn btn-secondary" style="width: 100%; margin-top: 8px;">
-                        🎯 Recenter Neutral Heading (Zero Yaw & Pitch)
-                    </button>
+                        <!-- Deadzone Slider -->
+                        <div class="setting-item">
+                            <div class="setting-header">
+                                <span class="setting-name">Micro-Movement Deadzone:</span>
+                                <span class="setting-val" id="valDeadzone">0.003°</span>
+                            </div>
+                            <input type="range" id="rangeDeadzone" min="0" max="0.05" step="0.001" value="0.003" aria-label="Deadzone">
+                        </div>
+
+                        <!-- Invert Checkboxes & Recenter Button -->
+                        <div class="checkbox-row" style="margin-top: 14px;">
+                            <label class="checkbox-label" for="chkInvertX">
+                                <input type="checkbox" id="chkInvertX"> Invert X (Yaw)
+                            </label>
+                            <label class="checkbox-label" for="chkInvertY">
+                                <input type="checkbox" id="chkInvertY"> Invert Y (Pitch)
+                            </label>
+                        </div>
+
+                        <button id="btnRecenter" class="btn btn-secondary" style="width: 100%; margin-top: 8px;">
+                            🎯 Recenter Neutral Heading (Zero Yaw & Pitch)
+                        </button>
+                    </div>
                 </section>
             </div>
         </main>
