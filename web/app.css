@@ -1,6 +1,6 @@
 /* ==========================================================================
    WinVR Host Control Center - Design System
-   Inspired by Airbnb's clarity, generous spacing, and refined visual hierarchy
+   Engineered for high-contrast clarity, ergonomic controls, and telemetry
    ========================================================================== */
 
 :root {
@@ -23,7 +23,7 @@
     /* Semantics & Accents */
     --accent-cyan: #00f2fe;
     --accent-blue: #0072ff;
-    --accent-coral: #ff385c; /* Airbnb signature coral */
+    --accent-coral: #ff385c;
     --accent-green: #10b981;
     --accent-yellow: #f59e0b;
 
@@ -323,7 +323,7 @@ header {
 }
 
 /* ==========================================================================
-   Airbnb-Style Card Component
+   Modular Card Component
    ========================================================================== */
 .card {
     background: var(--bg-surface);
@@ -659,7 +659,7 @@ header {
     border: 1px solid rgba(0, 242, 254, 0.2);
 }
 
-/* Airbnb-Inspired Tactile Slider */
+/* Tactile Precision Slider */
 input[type="range"] {
     width: 100%;
     height: 6px;
@@ -692,7 +692,7 @@ input[type="range"]::-webkit-slider-thumb:active {
     background: var(--accent-cyan);
 }
 
-/* Segmented Pill Group (Airbnb Style) */
+/* Segmented Pill Group */
 .presets-row {
     display: flex;
     flex-wrap: wrap;

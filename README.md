@@ -1,121 +1,112 @@
-# ⚡ WinVR - Windows Display to VR Converter
+# WinVR — High-Performance Windows to Mobile VR Pipeline
 
-**WinVR** turns any mobile phone into a wireless PC VR headset over your local Wi-Fi. Stream specific application windows (OBS-style) or your entire desktop directly to your phone in stereoscopic VR, with realistic Meta Quest style 180° FPV gaming dome immersion, curved IMAX virtual cinema, and ultra-low latency LAN streaming powered by Moonlight / Steam Link architecture.
-
----
-
-## 🌟 Architecture & Core Features
-
-### 1. 🎨 Airbnb-Level UI/UX Redesign
-- **Clarity, Spacing & Visual Hierarchy**:
-  Completely redesigned interface inspired by Airbnb's design philosophy: refined obsidian slate surfaces, generous yet purposeful breathing room, crisp typography (`Circular` / `-apple-system`), subtle 1px borders, and restrained elevation shadows.
-- **Tactile Segmented Controls & Sliders**:
-  Airbnb-style pill controls for display modes (`🚀 FPV Dome`, `🎬 Cinema`, `👓 3D SBS`), quick FPS presets (`30`, `60`, `90`, `120 FPS`), and LAN streaming profiles. Range sliders feature high-precision feedback with live monospace numerical pills.
-- **Eliminated Clutter with Preserved Functionality**:
-  Clean, modular cards with clear distinctions between primary capture actions and advanced tuning. Zero features were removed.
+**WinVR** transforms any modern smartphone into a wireless PC VR display over local Wi-Fi. It streams desktop game windows or full desktop environments directly to a mobile browser in stereoscopic 3D, featuring hardware-accelerated WebRTC encoding, custom WebGL shader tone-mapping, optical lens convergence calibration, and sub-millisecond gyroscope head-tracking translation.
 
 ---
 
-### 2. ⚡ Dynamic FPS Controller & Performance Engine
-- **User-Adjustable Target FPS Slider (30 to 120 FPS)**:
-  Adjust streaming frame rate dynamically during an active streaming session without needing to restart the stream or reload the page.
-- **Dual-Layer Frame Pacing**:
-  1. `MediaStreamTrack.applyConstraints({ frameRate: { ideal: fps, max: fps } })` dynamically re-paces DesktopCaptureEngine frame capture.
-  2. `RTCRtpSender.setParameters({ encodings: [{ maxFramerate: fps, degradationPreference: 'maintain-framerate' }] })` paces the hardware video encoder (NVENC / QuickSync / AMF) at the WebRTC transport layer.
-- **Honest Real-Time Diagnostics Telemetry**:
-  Distinguishes the user's selected **Target FPS** (e.g. `60 FPS`) from the **Actual Delivered FPS** (e.g. `59.9 FPS`), network round-trip latency (e.g. `2 ms LAN RTT`), and dropped frames.
-- **Persistent Preferences**:
-  Target FPS is persisted to `localStorage` (`winvr_target_fps`) and automatically restored upon launch.
+## Key Technical Features
+
+### 1. Modular Dashboard & Ergonomic Control Interface
+- **Structured Visual Hierarchy**: Built with a clean, high-contrast dark theme utilizing glassmorphism surfaces, clear functional grouping, accessible typography, subtle elevation borders, and responsive layouts across all viewport sizes.
+- **Precision Controls & Live Telemetry**: Segmented pill selectors for projection modes (`FPV Dome`, `Cinema`, `3D SBS`), dynamic FPS presets (`30`, `60`, `90`, `120 FPS`), and streaming profiles. Calibrated sliders provide millimeter-accurate physical optical adjustments with monospace numerical readouts.
+- **Customizable Layout**: Modular collapsible cards with chevron toggles, custom drag-and-drop section rearrangement, and persistent user configuration.
 
 ---
 
-### 3. 🛡️ Browser Tab & Window Switching Bug Fix
-- **Root Cause**:
-  When switching tabs in the browser or switching to another application, Chromium engines throttle background execution, drop `clientWidth`/`clientHeight` to 0, cancel fullscreen, and suspend `requestAnimationFrame`. When returning, stale cached dimensions and lack of responsive layout synchronization left the primary window permanently locked into a compressed mobile view.
-- **`ViewportLayoutManager` Fix**:
-  Implemented in `web/host.js` and `web/vr.js` listening to `resize`, `visibilitychange`, `pageshow`, and `focus`. On return, it forces immediate and staged layout passes, dynamically calculates actual viewport dimensions, applies the correct view classes (`is-desktop-view`, `is-tablet-view`, `is-mobile-view`), re-measures canvases, and ensures video playback continues seamlessly without tearing, stuck layouts, or stream resets.
+### 2. Dynamic Frame Pacing & Performance Engine
+- **Live Frame Rate Throttling (30 to 120 FPS)**: Dynamically adjusts streaming frame rate mid-session without restarting the stream or WebRTC peer connection.
+- **Dual-Layer Frame Pacing Pipeline**:
+  1. **Capture Pacing**: `MediaStreamTrack.applyConstraints({ frameRate: { ideal: fps, max: fps } })` governs the Windows desktop capture engine.
+  2. **Encoder Pacing**: `RTCRtpSender.setParameters({ encodings: [{ maxFramerate: fps, degradationPreference: 'maintain-framerate' }] })` coordinates hardware video encoding (NVENC / QuickSync / AMF).
+- **Diagnostics Telemetry**: Real-time monitoring distinguishing **Target FPS** from **Delivered FPS**, network round-trip time (`LAN RTT`), and dropped frames.
+- **State Persistence**: Selected performance and optical parameters persist via `localStorage` and restore automatically upon reconnection.
 
 ---
 
-### 4. 🚀 LAN Gaming Ultra-Low Latency Engine (Moonlight / Steam Link)
-- **16MB Operating System Socket Buffers**:
-  Forces `SO_SNDBUF` and `SO_RCVBUF` to 16MB across Windows TCP and UDP socket stacks, preventing buffer bloat.
-- **UDP Datagram Server (Port 8082)**:
-  Dedicated high-throughput UDP socket running on independent background thread (`WinVR_UDP_Worker`) for sub-millisecond head tracking and control datagrams.
-- **TCP_NODELAY Enabled Everywhere**:
-  Nagle's packet coalescing algorithm is explicitly disabled across HTTP, HTTPS, and WebSocket connections (`NoDelay = true`).
-- **Desynchronized WebGL Pipeline (`desynchronized: true`)**:
-  WebGL contexts bypass Android Chrome's compositor double-buffer queue, saving ~16ms input delay.
-- **0ms Jitter Buffer Target**:
-  Bypasses standard 150-250ms playout delays (`receiver.playoutDelayHint = 0`, `receiver.jitterBufferTarget = 0`).
+### 3. Lifecycle & Viewport Synchronization
+- **Background Throttling Mitigation**: Browsers suspend `requestAnimationFrame` and compress inactive viewports when switching application windows or backgrounding tabs.
+- **`ViewportLayoutManager`**: Monitors `resize`, `visibilitychange`, `pageshow`, and `focus` events. Upon viewport reactivation, it schedules staged layout passes, updates canvas render targets, and maintains continuous video decode without stream renegotiation.
 
 ---
 
-### 5. 👁️ Optical Tuning & Double Vision Fix
-- **Direct Stereoscopic Image Convergence**:
-  Adjust Horizontal Convergence (`-30mm` to `+30mm`) and Vertical Level Alignment (`-15mm` to `+15mm`) sliders to fuse left and right views into **ONE unified 3D image**, then click `💾 Save Alignment as Default`.
-- **Live Center Separator Adjustment**:
-  Live center split slider (40% to 60%) with micro-nudge buttons (`◀ Left 0.2%`, `Right 0.2% ▶`, `Reset 50%`) to align directly with your headset's nose bridge.
-- **3 Immersion Modes**:
-  - 🚀 **FPV 180° Game Dome**: Meta Quest panoramic curved dome ($195^\circ \times 115^\circ$, $105^\circ$ FOV).
-  - 🎬 **Virtual Cinema (IMAX)**: Floating curved screen in a 3D starfield universe.
-  - 👓 **3D SBS (Side-by-Side)**: Native stereoscopic 3D for 3D movies and VR games.
+### 4. Ultra-Low Latency LAN Streaming Pipeline
+- **Expanded Kernel Socket Buffers (16 MB)**: Sets `SO_SNDBUF` and `SO_RCVBUF` to 16 MB across Windows TCP and UDP socket stacks to eliminate buffer bloat and driver-level packet queuing.
+- **High-Throughput UDP Worker (Port 8082)**: Runs a dedicated background UDP worker (`WinVR_UDP_Worker`) delivering sub-millisecond gyroscope datagram processing.
+- **Zero Nagle Coalescing (`TCP_NODELAY`)**: Explicitly disables Nagle's packet buffering algorithm across HTTP, HTTPS, and WebSocket connections (`NoDelay = true`).
+- **Desynchronized WebGL Pipeline (`desynchronized: true`)**: Configures mobile WebGL context to bypass Android Chrome compositor double-buffering, eliminating frame presentation latency.
+- **Zero Playout Delay (`playoutDelayHint = 0`)**: Overrides default 150–250 ms WebRTC jitter buffers (`receiver.playoutDelayHint = 0`, `receiver.jitterBufferTarget = 0`) for real-time interactive response.
 
 ---
 
-## 🚀 Quick Start
+### 5. Optical Calibration & Double Vision Correction
+- **Independent Stereoscopic Convergence**: Independent horizontal convergence ($-30\text{ mm}$ to $+30\text{ mm}$) and vertical alignment ($-15\text{ mm}$ to $+15\text{ mm}$) sliders calibrate stereoscopic views into a unified 3D focal image.
+- **Physical IPD & Center Split**: Calibrated separation control (40% to 60%) with micro-nudge stepping to align cleanly with diverse headset nose bridges and optical centers.
+- **Projection Modes**:
+  - **FPV Panoramic Dome**: $195^\circ \times 115^\circ$ curved dome projection with $105^\circ$ FOV for cockpit simulators and first-person games.
+  - **Virtual Cinema**: Curved floating screen with adjustable distance and curvature inside an ambient backdrop.
+  - **Stereoscopic 3D (Side-by-Side)**: Native 1:1 stereo pass-through for stereoscopic media and 3D titles.
+
+---
+
+### 6. True Color & Anti-Washout Tone Mapping
+- **Custom Fragment Shader Pipeline**: Eliminates blown-out highlights and washed-out windshields caused by Windows HDR desktop capture.
+- **Targeted Luminance Recovery**: Selectively compresses high-luminance highlights and restores road/environment contrast without crushing dark cabin or cockpit interiors.
+- **Hardware-Neutral GLSL Shader**: Pure GPU math executed during texture sampling with 0 ms CPU overhead.
+
+---
+
+## Quick Start
 
 ### 1. Launch WinVR
-In the `WinVR` folder, double-click:
+Run the startup script in the `WinVR` directory:
 ```bat
 run.bat
 ```
-*(Or run `WinVR.exe` directly)*.
+*(Or launch `WinVR.exe` directly)*.
 
-The **WinVR Native Controller** will open, and your default browser will launch the **PC Control Dashboard** at `http://localhost:8080`.
+The **WinVR Native Controller** starts, launching the **PC Control Dashboard** at `http://localhost:8080`.
 
-### 2. Connect Your Phone
-1. Connect your phone to the **same Wi-Fi network** as your PC.
-2. Scan the **HTTPS QR code** on the PC screen (or navigate to `https://<YOUR_PC_IP>:8443/vr`).
-   > *Note on first visit:* Mobile browsers will display "Connection is not private" (because it's a self-signed local LAN certificate). Tap **Advanced -> Proceed to [IP] (unsafe)**. This is normal for local network servers and unlocks all motion sensors!
-3. Before entering VR, adjust the **Double Vision Convergence** slider until the screen comfortably fuses into one clear image.
-4. Tap **"ENTER VR HEADSET"** and slot your phone into your headset!
+### 2. Connect Mobile Client
+1. Ensure the smartphone and PC are connected to the **same local Wi-Fi network**.
+2. Scan the **QR Code** on the PC dashboard with your phone camera, or browse to `https://<YOUR_PC_IP>:8443/vr.html`.
+   > *Note:* Accept the self-signed certificate on initial access. The local HTTPS connection is required by mobile browsers to grant access to hardware orientation sensors and gyroscope APIs.
+3. Align optical convergence using the on-screen calibration controls.
+4. Tap **"ENTER VR HEADSET"** and insert the phone into your mobile VR headset.
 
-### 3. Cast Any Window & Adjust FPS
-1. On the PC Control Dashboard (`http://localhost:8080`), click:
-   **"Select Game / App Window to Cast"**
-2. Choose your game window, VLC player, or entire monitor.
-3. Use the **Stream Performance & Frame Rate** slider to select your desired target FPS (e.g. 60 FPS, 90 FPS, or 120 FPS).
+### 3. Select Display Source
+1. On the PC Control Dashboard, click **"Select Game / App Window to Cast"**.
+2. Select an application window or full display.
+3. Configure target frame rates (60, 90, or 120 FPS) and latency profiles as required.
 
 ---
 
-## 🎮 Head-Tracking & Touch Controls
+## Controls & Navigation
 
 | Action | Function |
 |---|---|
-| **Head Movement (Yaw / Pitch)** | Moves PC mouse / aims camera in games |
-| **Single Tap on Phone Screen** | Instantly snaps / recenters neutral forward heading |
-| **Two-Finger Tap** | Opens / Closes the In-VR Floating Tuning HUD |
+| **Head Movement (Yaw / Pitch)** | Translates head orientation to PC cursor / camera view |
+| **Single Tap on Phone Screen** | Recenters neutral forward heading |
+| **Two-Finger Tap** | Toggles the In-VR Floating Calibration HUD |
 
 ---
 
-## 🛠️ Project Structure
+## Architecture & Repository Structure
 
 ```
 WinVR/
 ├── WinVR.exe        # Standalone Native Windows Server & Controller (.NET 4.0+)
-├── cert.pfx         # SSL Certificate for local HTTPS (Port 8443)
-├── build.bat        # Recompile script (using Windows built-in csc.exe)
-├── run.bat          # 1-click launch script
-├── README.md        # Documentation
+├── cert.pfx         # Local SSL certificate for HTTPS (Port 8443) and sensor access
+├── build.bat        # Build script using Windows csc.exe compiler
+├── run.bat          # Startup script
+├── README.md        # Technical documentation
 ├── src/
-│   └── Program.cs   # Dual HTTP/HTTPS Server, UDP 8082 Fast Server, WebSockets, Win32 Mouse Hook
+│   └── Program.cs   # Dual HTTP/HTTPS server, UDP worker, WebSockets, Win32 input hook
 └── web/
-    ├── index.html   # PC Host Control Dashboard (Airbnb Design, FPS Slider, Diagnostics)
-    ├── app.css      # Airbnb-inspired Design System, Responsive Breakpoints, Glassmorphism
-    ├── host.js      # ViewportLayoutManager, FpsController, WebRTC Broadcaster, UDP Chunker
-    ├── vr.html      # Mobile VR Client View (Polished Airbnb Setup Overlay & HUD)
-    ├── vr.css       # Mobile stereoscopic styling & In-VR HUD
-    ├── vr.js        # Desynchronized WebGL, LifecycleManager, sensor fusion, UDP DataChannel
-    └── qrcode.js    # Pure JS Offline QR Code generator
+    ├── index.html   # PC host control dashboard
+    ├── app.css      # Host dashboard design system and responsive layout
+    ├── host.js      # WebRTC broadcaster, layout manager, UDP datagram handler
+    ├── vr.html      # Mobile VR client and stereo canvas
+    ├── vr.css       # Mobile client styling and In-VR HUD
+    ├── vr.js        # WebGL rendering engine, tone-mapping shader, sensor fusion
+    └── qrcode.js    # ISO/IEC 18004 QR code generator with Reed-Solomon ECC
 ```

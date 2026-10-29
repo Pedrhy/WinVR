@@ -1,6 +1,6 @@
 /* ==========================================================================
    WinVR Mobile - Virtual Reality Display & Setup Stylesheet
-   Airbnb-inspired clean minimalism, subtle borders, tactile controls
+   Clean ergonomic interface, subtle borders, tactile controls
    ========================================================================== */
 
 * {
@@ -166,7 +166,7 @@ body.raw-video-mode #rawBypassBanner {
 .hint-right { left: 75%; }
 
 /* ==========================================================================
-   Starting Setup Overlay Screen (Airbnb Polished Aesthetics)
+   Starting Setup Overlay Screen
    ========================================================================== */
 #overlay {
     position: absolute;
@@ -364,7 +364,7 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
 }
 
-/* Primary Enter VR Button (Airbnb-Style Rounded Pill) */
+/* Primary Enter VR Button */
 .btn-primary {
     background: linear-gradient(135deg, #00f2fe 0%, #0072ff 100%);
     border: none;
