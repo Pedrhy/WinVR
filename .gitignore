@@ -9,5 +9,6 @@
 # Build artifacts and temp files
 *.tmp
 *.log
+*.zip
 bin/
 obj/
