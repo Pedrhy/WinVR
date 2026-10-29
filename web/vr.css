@@ -1,0 +1,498 @@
+/* ==========================================================================
+   WinVR Mobile - Virtual Reality Display & Setup Stylesheet
+   Airbnb-inspired clean minimalism, subtle borders, tactile controls
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Circular", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+#vrCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: 1;
+    transform: translateZ(0);
+    will-change: transform;
+    contain: strict;
+}
+
+/* 
+ * CRITICAL FIX FOR MOBILE LATENCY & SCREEN TIMEOUT:
+ * #remoteVideo must be fully sized (100vw x 100vh) behind #vrCanvas.
+ * If sized at 2px, mobile Chromium classifies it as off-screen/invisible,
+ * throttling decode rates, buffering frames, and adding 200-300ms of lag!
+ */
+#remoteVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    opacity: 0.005;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Diagnostic Raw <video> Direct Bypass Mode (Direct Native Video, Zero WebGL) */
+body.raw-video-mode #remoteVideo {
+    opacity: 1 !important;
+    z-index: 100 !important;
+    object-fit: contain !important;
+    pointer-events: auto !important;
+    background: #000 !important;
+}
+body.raw-video-mode #vrCanvas {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+body.raw-video-mode #centerDivider {
+    display: none !important;
+}
+body.raw-video-mode .recenter-hint {
+    display: none !important;
+}
+
+#rawBypassBanner {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 15, 25, 0.90);
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.80rem;
+    font-weight: 600;
+    z-index: 105;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+body.raw-video-mode #rawBypassBanner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#wakeVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 2px;
+    opacity: 0.01;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Center Nose Bridge Alignment Divider */
+#centerDivider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: rgba(0, 242, 254, 0.35);
+    transform: translateX(-50%) translateZ(0);
+    will-change: left, background, box-shadow;
+    z-index: 5;
+    pointer-events: none;
+    transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    contain: layout style;
+}
+
+#centerDivider.tuning {
+    background: #00f2fe;
+    box-shadow: 0 0 14px #00f2fe, 0 0 28px #00f2fe;
+}
+
+#centerDivider::before, #centerDivider::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #00f2fe;
+    box-shadow: 0 0 10px #00f2fe;
+}
+
+#centerDivider::before { top: 24px; }
+#centerDivider::after { bottom: 24px; }
+
+/* Subtle on-screen Recenter Hints */
+.recenter-hint {
+    position: absolute;
+    bottom: 24px;
+    background: rgba(10, 14, 22, 0.75);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    color: #00f2fe;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 6;
+    transform: translateX(-50%) translateZ(0);
+    will-change: transform, opacity;
+    opacity: 0.7;
+    transition: opacity 0.25s ease;
+    contain: content;
+}
+
+.hint-left { left: 25%; }
+.hint-right { left: 75%; }
+
+/* ==========================================================================
+   Starting Setup Overlay Screen (Airbnb Polished Aesthetics)
+   ========================================================================== */
+#overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: radial-gradient(circle at center, #101524 0%, #060810 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    text-align: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0);
+}
+
+.logo-badge {
+    background: linear-gradient(135deg, #00f2fe 0%, #0072ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+}
+
+.tagline {
+    color: #94a3b8;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+    max-width: 320px;
+}
+
+/* Status Card */
+.status-card {
+    background: #141a28;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 360px;
+    contain: content;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 0.82rem;
+}
+
+.status-label {
+    color: #64748b;
+}
+
+.status-value {
+    font-weight: 600;
+    font-size: 0.82rem;
+}
+
+.badge-connected {
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.badge-waiting {
+    color: #f59e0b;
+}
+
+/* Warning Card */
+.warning-box {
+    background: rgba(255, 56, 92, 0.1);
+    border: 1px solid rgba(255, 56, 92, 0.35);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    max-width: 360px;
+    text-align: left;
+    font-size: 0.78rem;
+    color: #fca5a5;
+    line-height: 1.45;
+    display: none;
+    contain: content;
+}
+
+.warning-box.visible {
+    display: block;
+}
+
+.warning-box strong {
+    color: #ff385c;
+}
+
+.warning-box a {
+    color: #00f2fe;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* Calibration Container Box */
+.calibration-box {
+    background: #121724;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 360px;
+    text-align: left;
+    contain: content;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.calib-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #00f2fe;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: -0.01em;
+}
+
+.mode-toggle-group {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    background: #0b0e17;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mode-toggle-btn {
+    flex: 1;
+    padding: 7px 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+}
+
+.mode-toggle-btn.active {
+    background: #1c2436;
+    border-color: rgba(0, 242, 254, 0.3);
+    color: #00f2fe;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.calib-row {
+    margin: 9px 0;
+}
+
+.calib-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.calib-label span:last-child {
+    color: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    touch-action: pan-y;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 242, 254, 0.6);
+    border: 2px solid #00f2fe;
+    cursor: pointer;
+}
+
+/* Primary Enter VR Button (Airbnb-Style Rounded Pill) */
+.btn-primary {
+    background: linear-gradient(135deg, #00f2fe 0%, #0072ff 100%);
+    border: none;
+    color: #000;
+    padding: 14px 34px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 6px 22px rgba(0, 242, 254, 0.35);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    transform: translateZ(0);
+}
+
+.btn-primary:active {
+    transform: scale(0.97) translateZ(0);
+}
+
+.hint-text {
+    font-size: 0.75rem;
+    color: #64748b;
+    max-width: 320px;
+    line-height: 1.45;
+}
+
+/* In-VR Floating HUD (Duplicated for Left & Right Eye) */
+.hud-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    display: none;
+    transform: translateZ(0);
+}
+
+.hud-container.visible {
+    display: flex;
+}
+
+.hud-eye {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hud-panel {
+    background: rgba(14, 18, 28, 0.92);
+    border: 1px solid rgba(0, 242, 254, 0.35);
+    border-radius: 16px;
+    padding: 14px 16px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: scale(0.85) translateZ(0);
+    will-change: transform;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+    contain: content;
+}
+
+.hud-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #00f2fe;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+
+.hud-btn-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.hud-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    transform: translateZ(0);
+}
+
+.hud-btn.active {
+    background: #0072ff;
+    border-color: #00f2fe;
+}
+
+.hud-btn:active {
+    transform: scale(0.96) translateZ(0);
+}
+
+/* Toast */
+.vr-toast {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(0);
+    will-change: transform, opacity;
+    background: rgba(14, 18, 28, 0.92);
+    border: 1px solid rgba(0, 242, 254, 0.5);
+    color: #00f2fe;
+    padding: 8px 22px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    contain: content;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.vr-toast.show {
+    opacity: 1;
+}

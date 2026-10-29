@@ -1,0 +1,827 @@
+/* ==========================================================================
+   WinVR Host Control Center - Design System
+   Inspired by Airbnb's clarity, generous spacing, and refined visual hierarchy
+   ========================================================================== */
+
+:root {
+    /* Color Palette - Refined Warm Obsidian & Electric Cyan */
+    --bg-base: #0a0d14;
+    --bg-surface: #121722;
+    --bg-surface-elevated: #182030;
+    --bg-surface-hover: #1e273a;
+    --bg-input: #0e121b;
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-focus: #00f2fe;
+    --border-card: rgba(255, 255, 255, 0.07);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Semantics & Accents */
+    --accent-cyan: #00f2fe;
+    --accent-blue: #0072ff;
+    --accent-coral: #ff385c; /* Airbnb signature coral */
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+
+    /* Gradients */
+    --grad-primary: linear-gradient(135deg, #00f2fe 0%, #0072ff 100%);
+    --grad-coral: linear-gradient(135deg, #ff385c 0%, #e01545 100%);
+    --grad-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.08) 100%);
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* Elevation Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-glow: 0 0 24px rgba(0, 242, 254, 0.25);
+
+    /* Transitions */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.15s var(--ease-out);
+    --transition-base: 0.22s var(--ease-out);
+}
+
+/* Base Reset & Typography */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg-base);
+    background-image:
+        radial-gradient(circle at 10% 15%, rgba(0, 114, 255, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(0, 242, 254, 0.06) 0%, transparent 45%);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Circular", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    min-height: 100vh;
+    padding: 24px 20px;
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ==========================================================================
+   Header & Brand Navigation Bar
+   ========================================================================== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--grad-primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.3);
+    flex-shrink: 0;
+    transform: translateZ(0);
+}
+
+.brand-icon svg {
+    color: #000;
+}
+
+.brand-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(0, 242, 254, 0.15);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+}
+
+.brand-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.header-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    contain: content;
+}
+
+.badge:hover {
+    border-color: var(--border-medium);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot-green {
+    background: var(--accent-green);
+    box-shadow: 0 0 10px var(--accent-green);
+}
+
+.dot-yellow {
+    background: var(--accent-yellow);
+    box-shadow: 0 0 10px var(--accent-yellow);
+}
+
+/* ==========================================================================
+   Responsive Dashboard Grid Layout
+   ========================================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 24px;
+    align-items: start;
+    transition: opacity 0.2s ease;
+}
+
+.col-stream, .col-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0; /* Prevents CSS grid blowout */
+}
+
+/* ==========================================================================
+   Airbnb-Style Card Component
+   ========================================================================== */
+.card {
+    background: var(--bg-surface);
+    background-image: var(--grad-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transform: translateZ(0);
+    contain: layout style;
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+    gap: 12px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.card-title svg {
+    color: var(--accent-cyan);
+    flex-shrink: 0;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.45;
+}
+
+/* ==========================================================================
+   Stream Preview Stage Area
+   ========================================================================== */
+.preview-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    transform: translateZ(0);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
+    contain: strict;
+}
+
+#previewVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: translateZ(0);
+}
+
+.preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 20px;
+}
+
+.preview-placeholder svg {
+    opacity: 0.6;
+}
+
+.preview-placeholder span {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.preview-overlay-stats {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(10, 13, 20, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+    color: var(--accent-green);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+    contain: content;
+}
+
+/* ==========================================================================
+   Buttons & Interactive Controls
+   ========================================================================== */
+.action-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.btn {
+    padding: 12px 22px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+    transform: translateZ(0);
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.btn:active {
+    transform: scale(0.98) translateZ(0);
+}
+
+.btn-primary {
+    background: var(--grad-primary);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.28);
+    flex: 1;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 24px rgba(0, 242, 254, 0.42);
+    transform: translateY(-1px) translateZ(0);
+}
+
+.btn-secondary {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-surface-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger {
+    background: rgba(255, 56, 92, 0.15);
+    color: #ff5a77;
+    border: 1px solid rgba(255, 56, 92, 0.3);
+}
+
+.btn-danger:hover {
+    background: rgba(255, 56, 92, 0.25);
+    border-color: rgba(255, 56, 92, 0.5);
+}
+
+.btn-micro {
+    padding: 5px 10px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    transform: translateZ(0);
+}
+
+.btn-micro:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+.btn-micro:active {
+    transform: scale(0.96) translateZ(0);
+}
+
+/* ==========================================================================
+   Quick Connect & QR Code Section
+   ========================================================================== */
+.qr-section {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 8px;
+    contain: content;
+}
+
+#qrcodeContainer {
+    width: 130px;
+    height: 130px;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.qr-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.qr-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #fff;
+}
+
+.qr-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.link-box {
+    display: flex;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color var(--transition-fast);
+}
+
+.link-box:focus-within {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.2);
+}
+
+.link-box input {
+    background: transparent;
+    border: none;
+    color: var(--accent-cyan);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    flex: 1;
+    outline: none;
+    min-width: 0;
+}
+
+.link-box button {
+    background: var(--bg-surface-elevated);
+    border: none;
+    border-left: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 0 14px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: background var(--transition-fast);
+}
+
+.link-box button:hover {
+    background: rgba(0, 242, 254, 0.15);
+    color: var(--accent-cyan);
+}
+
+/* ==========================================================================
+   Settings Groups, Segmented Controls & Sliders
+   ========================================================================== */
+.setting-item {
+    margin-bottom: 18px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.setting-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.setting-val {
+    color: var(--accent-cyan);
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.82rem;
+    background: rgba(0, 242, 254, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+/* Airbnb-Inspired Tactile Slider */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    touch-action: pan-y;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 242, 254, 0.6);
+    border: 2px solid var(--accent-cyan);
+    transition: transform var(--transition-fast);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    transform: scale(1.25);
+    background: var(--accent-cyan);
+}
+
+/* Segmented Pill Group (Airbnb Style) */
+.presets-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    background: var(--bg-input);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.preset-btn {
+    flex: 1;
+    padding: 7px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    transform: translateZ(0);
+    text-align: center;
+}
+
+.preset-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.preset-btn.active {
+    background: var(--bg-surface-elevated);
+    border-color: rgba(0, 242, 254, 0.3);
+    color: var(--accent-cyan);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Checkbox Toggle Row */
+.checkbox-row {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    user-select: none;
+    transition: color var(--transition-fast);
+}
+
+.checkbox-label:hover {
+    color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--accent-cyan);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Stream Tip Banner */
+.stream-tip-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(0, 242, 254, 0.05);
+    border: 1px solid rgba(0, 242, 254, 0.15);
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+}
+
+.stream-tip-banner strong {
+    color: var(--text-primary);
+}
+
+.stream-tip-banner em {
+    color: var(--accent-cyan);
+    font-style: normal;
+}
+
+.stream-tip-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+/* Telemetry Stats Grid */
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.telemetry-badge {
+    background: var(--bg-input);
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.telemetry-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+.telemetry-value {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    margin-top: 2px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Gyro Compass Visualizer Canvas */
+.visualizer-container {
+    height: 105px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateZ(0);
+    contain: strict;
+}
+
+#gyroVisualizer {
+    width: 100%;
+    height: 100%;
+    transform: translateZ(0);
+}
+
+/* Subtle Divider */
+.divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 18px 0;
+    border: none;
+}
+
+/* Virtual Cinema Controls Section */
+#sectionCinemaControls {
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+#sectionCinemaControls:hover {
+    border-color: rgba(0, 242, 254, 0.25);
+    background: rgba(0, 242, 254, 0.02);
+}
+
+#sectionCinemaControls .setting-header {
+    margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints & Brave Tab-Switching Stabilization
+   ========================================================================== */
+
+/* Tablet Breakpoint (768px - 1023px) */
+@media (max-width: 1023px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    body {
+        padding: 18px 14px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+
+/* Mobile Breakpoint (< 768px) */
+@media (max-width: 767px) {
+    body {
+        padding: 14px 10px;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .header-badges {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: var(--radius-md);
+    }
+
+    .qr-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #qrcodeContainer {
+        align-self: center;
+    }
+
+    .action-row {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .presets-row {
+        flex-wrap: wrap;
+    }
+
+    .preset-btn {
+        flex: 1 1 calc(50% - 6px);
+    }
+}
+
+/* Ensure no layout shift or stuck mobile classes */
+.is-desktop-view .dashboard-grid {
+    grid-template-columns: 1.25fr 1fr;
+}
+
+.is-tablet-view .dashboard-grid,
+.is-mobile-view .dashboard-grid {
+    grid-template-columns: 1fr;
+}

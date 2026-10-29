@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WinVR Mobile - Virtual Reality Display</title>
+    <link rel="stylesheet" href="vr.css">
+</head>
+<body>
+    <canvas id="vrCanvas"></canvas>
+
+    <!-- Active Video elements kept in DOM to permanently prevent mobile screen timeout -->
+    <video id="remoteVideo" autoplay playsinline muted></video>
+    <video id="wakeVideo" playsinline muted loop></video>
+    <audio id="remoteAudio" autoplay></audio>
+
+    <!-- Raw Video Direct Bypass Notification / Tap to Exit Banner -->
+    <div id="rawBypassBanner">
+        <span>📺 Raw &lt;video&gt; Direct Bypass Active (Tap to Return to WebGL VR)</span>
+    </div>
+
+    <div id="centerDivider"></div>
+
+    <!-- On-Screen Recenter Hints for Left & Right Eye -->
+    <div class="recenter-hint hint-left">🎯 Tap anywhere to Recenter</div>
+    <div class="recenter-hint hint-right">🎯 Tap anywhere to Recenter</div>
+
+    <!-- Start & Setup Screen (Airbnb-Inspired Clean Setup View) -->
+    <div id="overlay">
+        <div class="logo-badge">⚡ WinVR</div>
+        <p class="tagline">Meta Quest Class 3D Virtual Cinema & FPV Gaming Dome</p>
+
+        <!-- Status Card -->
+        <div class="status-card">
+            <div class="status-row">
+                <span class="status-label">PC Server:</span>
+                <span id="srvStatus" class="status-value badge-waiting">Connecting...</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Stream:</span>
+                <span id="streamStatus" class="status-value badge-waiting">Awaiting PC Host</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Head Tracking (Gyro):</span>
+                <span id="gyroStatus" class="status-value">Ready</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Display Anti-Sleep:</span>
+                <span id="wakeStatus" class="status-value badge-connected">Active</span>
+            </div>
+        </div>
+
+        <!-- Insecure Context Warning (shown if Chrome blocks sensors on plain HTTP) -->
+        <div id="secureWarning" class="warning-box">
+            <strong>⚠️ Chrome Gyroscope Requirement:</strong><br>
+            Android Chrome requires HTTPS to allow head-tracking sensors.<br><br>
+            <strong>Recommended:</strong> Tap here to <a id="lnkSwitchHttps" href="#">Switch to Secure HTTPS (Port 8443)</a> and tap 'Advanced -> Proceed'.<br><br>
+            <strong>Or Chrome Flag:</strong> In Chrome, open <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code>, add this address, set to Enabled, and relaunch Chrome.
+        </div>
+
+        <!-- VR Settings Card -->
+        <div class="calibration-box">
+            <div class="calib-title">
+                <span>👓 VR Display & Mode Tuning</span>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mode-toggle-group">
+                <button class="mode-toggle-btn active" id="btnPhoneModeDome" data-mode="dome">🚀 FPV Dome</button>
+                <button class="mode-toggle-btn" id="btnPhoneModeCinema" data-mode="cinema">🎬 Cinema</button>
+                <button class="mode-toggle-btn" id="btnPhoneModeSbs" data-mode="sbs">👓 3D SBS</button>
+            </div>
+
+            <!-- Center Separator Slider -->
+            <div class="calib-row">
+                <div class="calib-label">
+                    <span>Center Split / Separator:</span>
+                    <span id="valPhoneSplit">50.0%</span>
+                </div>
+                <input type="range" id="rangePhoneSplit" min="40.0" max="60.0" step="0.1" value="50.0">
+            </div>
+
+            <!-- Screen Distance (Cinema) -->
+            <div class="calib-row" id="rowDistance">
+                <div class="calib-label">
+                    <span>Virtual Screen Distance:</span>
+                    <span id="valDistance">3.2m</span>
+                </div>
+                <input type="range" id="rangeDistance" min="1.0" max="50.0" step="0.2" value="3.2">
+            </div>
+
+            <!-- Screen Scale -->
+            <div class="calib-row">
+                <div class="calib-label">
+                    <span>Screen Scale (Size):</span>
+                    <span id="valScale">100%</span>
+                </div>
+                <input type="range" id="rangeScale" min="50" max="800" step="5" value="100">
+            </div>
+
+            <!-- Vertical Elevation -->
+            <div class="calib-row">
+                <div class="calib-label">
+                    <span>Vertical Elevation:</span>
+                    <span id="valElevation">0.0m</span>
+                </div>
+                <input type="range" id="rangeElevation" min="-1.5" max="1.5" step="0.1" value="0.0">
+            </div>
+
+            <!-- IPD -->
+            <div class="calib-row">
+                <div class="calib-label">
+                    <span>IPD (Eye Separation):</span>
+                    <span id="valIpd">63mm</span>
+                </div>
+                <input type="range" id="rangeIpd" min="50" max="75" step="1" value="63">
+            </div>
+
+            <!-- Double Vision Fix: Stereoscopic Convergence Alignment -->
+            <div class="calib-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <div class="calib-label">
+                    <span>👁️ Convergence (Double Vision Fix):</span>
+                    <span id="valPhoneShiftX">0.0mm</span>
+                </div>
+                <input type="range" id="rangePhoneShiftX" min="-30.0" max="30.0" step="0.5" value="0.0">
+                <button id="btnPhoneSaveCalib" class="mode-toggle-btn" style="margin-top: 10px; width: 100%; border-color: rgba(16,185,129,0.5); color: #10b981;">💾 Save Alignment as Default</button>
+                <button id="btnOverlayRawBypass" class="mode-toggle-btn" style="margin-top: 8px; width: 100%; border-color: rgba(56,189,248,0.5); color: #38bdf8;">📺 Diagnostic: Raw &lt;video&gt; Direct Bypass</button>
+            </div>
+        </div>
+
+        <button id="btnEnterVR" class="btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            ENTER VR HEADSET
+        </button>
+
+        <p class="hint-text">
+            <strong>Head Tracking:</strong> Look around to control game camera / cinema screen.<br>
+            <strong>🎯 Single Tap Anywhere:</strong> Instantly snaps screen level at eye level.<br>
+            <strong>Two-Finger Tap:</strong> Opens / closes In-VR adjustment menu.
+        </p>
+    </div>
+
+    <!-- Floating In-VR HUD (Duplicated for Left & Right Eye) -->
+    <div id="hudContainer" class="hud-container">
+        <!-- Left Eye HUD -->
+        <div class="hud-eye" id="hudEyeLeft">
+            <div class="hud-panel">
+                <div class="hud-title">VR Display Controls</div>
+                <div class="hud-diag-row" style="display: flex; gap: 4px; justify-content: space-around; font-size: 0.68rem; color: #67e8f9; background: rgba(0,0,0,0.55); border: 1px solid rgba(103,232,249,0.25); padding: 4px 6px; border-radius: 4px; margin-bottom: 8px;">
+                    <span>⚡ <span class="hud-val-fps">--</span> FPS</span>
+                    <span>🎯 <span class="hud-val-hz">--</span> Hz</span>
+                    <span>⏱️ <span class="hud-val-rtt">--</span> ms</span>
+                    <span title="Decoded Resolution">🖥️ <span class="hud-val-res">--</span></span>
+                    <span title="Jitter Buffer">📦 <span class="hud-val-jb">0ms</span></span>
+                    <span title="Highlight Clipping %">💥 <span class="hud-val-clip">0%</span></span>
+                    <span title="Black Floor %">⬛ <span class="hud-val-floor">0%</span></span>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn hud-btn-raw" data-action="toggle-raw-bypass" style="color: #38bdf8; border-color: rgba(56,189,248,0.5); font-weight: 600;">📺 Raw Bypass</button>
+                    <button class="hud-btn" data-action="merge-in">◀ Merge In</button>
+                    <button class="hud-btn" data-action="merge-out">Merge Out ▶</button>
+                    <button class="hud-btn" data-action="save-calib" style="color: #10b981; border-color: rgba(16,185,129,0.4);">💾 Save</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn hud-mode-btn active" data-action="mode-dome" title="Focused 135° Dome (50% higher center sharpness for racing sims)">🏎️ Sim (135°)</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-dome-wide" title="Wide 195° Dome">🌐 Wide (195°)</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-cinema">🎬 Cinema</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-sbs">👓 3D SBS</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="split-left">◀ Split L</button>
+                    <button class="hud-btn" data-action="split-reset">Split 50%</button>
+                    <button class="hud-btn" data-action="split-right">Split R ▶</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="recenter">🎯 Recenter View</button>
+                    <button class="hud-btn" data-action="req-keyframe" style="color: #f59e0b; border-color: rgba(245,158,11,0.5);">⚡ Refresh IDR</button>
+                    <button class="hud-btn" data-action="close-hud">✖ Close</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="dist-far">⤢ Push Back</button>
+                    <button class="hud-btn" data-action="dist-near">⤡ Closer</button>
+                    <button class="hud-btn" data-action="size-down">− Smaller</button>
+                    <button class="hud-btn" data-action="size-up">+ Bigger</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="elev-up">⬆ Higher</button>
+                    <button class="hud-btn" data-action="elev-down">⬇ Lower</button>
+                    <button class="hud-btn hud-btn-curve active" data-action="toggle-curve">📐 Curved</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Eye HUD -->
+        <div class="hud-eye" id="hudEyeRight">
+            <div class="hud-panel">
+                <div class="hud-title">VR Display Controls</div>
+                <div class="hud-diag-row" style="display: flex; gap: 4px; justify-content: space-around; font-size: 0.68rem; color: #67e8f9; background: rgba(0,0,0,0.55); border: 1px solid rgba(103,232,249,0.25); padding: 4px 6px; border-radius: 4px; margin-bottom: 8px;">
+                    <span>⚡ <span class="hud-val-fps">--</span> FPS</span>
+                    <span>🎯 <span class="hud-val-hz">--</span> Hz</span>
+                    <span>⏱️ <span class="hud-val-rtt">--</span> ms</span>
+                    <span title="Decoded Resolution">🖥️ <span class="hud-val-res">--</span></span>
+                    <span title="Jitter Buffer">📦 <span class="hud-val-jb">0ms</span></span>
+                    <span title="Highlight Clipping %">💥 <span class="hud-val-clip">0%</span></span>
+                    <span title="Black Floor %">⬛ <span class="hud-val-floor">0%</span></span>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn hud-btn-raw" data-action="toggle-raw-bypass" style="color: #38bdf8; border-color: rgba(56,189,248,0.5); font-weight: 600;">📺 Raw Bypass</button>
+                    <button class="hud-btn" data-action="merge-in">◀ Merge In</button>
+                    <button class="hud-btn" data-action="merge-out">Merge Out ▶</button>
+                    <button class="hud-btn" data-action="save-calib" style="color: #10b981; border-color: rgba(16,185,129,0.4);">💾 Save</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn hud-mode-btn active" data-action="mode-dome" title="Focused 135° Dome (50% higher center sharpness for racing sims)">🏎️ Sim (135°)</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-dome-wide" title="Wide 195° Dome">🌐 Wide (195°)</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-cinema">🎬 Cinema</button>
+                    <button class="hud-btn hud-mode-btn" data-action="mode-sbs">👓 3D SBS</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="split-left">◀ Split L</button>
+                    <button class="hud-btn" data-action="split-reset">Split 50%</button>
+                    <button class="hud-btn" data-action="split-right">Split R ▶</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="recenter">🎯 Recenter View</button>
+                    <button class="hud-btn" data-action="req-keyframe" style="color: #f59e0b; border-color: rgba(245,158,11,0.5);">⚡ Refresh IDR</button>
+                    <button class="hud-btn" data-action="close-hud">✖ Close</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="dist-far">⤢ Push Back</button>
+                    <button class="hud-btn" data-action="dist-near">⤡ Closer</button>
+                    <button class="hud-btn" data-action="size-down">− Smaller</button>
+                    <button class="hud-btn" data-action="size-up">+ Bigger</button>
+                </div>
+                <div class="hud-btn-row">
+                    <button class="hud-btn" data-action="elev-up">⬆ Higher</button>
+                    <button class="hud-btn" data-action="elev-down">⬇ Lower</button>
+                    <button class="hud-btn hud-btn-curve active" data-action="toggle-curve">📐 Curved</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recenter Toast Notification -->
+    <div id="vrToast" class="vr-toast">Screen Centered</div>
+
+    <script src="vr.js"></script>
+</body>
+</html>
