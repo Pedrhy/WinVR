@@ -2382,7 +2382,7 @@
 
             // Click listener
             header.addEventListener('click', function(e) {
-                if (e.target.closest('#btnToggleCurved') || e.target.closest('input') || e.target.closest('select')) {
+                if (e.target.closest('.card-action-btn') || e.target.closest('.card-drag-handle') || e.target.closest('#btnToggleCurved') || e.target.closest('input') || e.target.closest('select')) {
                     return;
                 }
                 const nowCollapsed = container.classList.toggle('is-collapsed');
@@ -2395,9 +2395,174 @@
         });
     }
 
+    // --- Card Rearrangement (Drag & Drop + Up/Down/Swap Buttons) ---
+    function initCardReordering() {
+        const colStream = document.getElementById('colStream');
+        const colControls = document.getElementById('colControls');
+        const btnResetLayout = document.getElementById('btnResetLayout');
+
+        const defaultLayout = {
+            left: ['cardStream', 'cardFpsEngine', 'cardResolutionEngine', 'cardLanEngine'],
+            right: ['cardVrCalibration', 'cardGyro']
+        };
+
+        function saveLayout() {
+            if (!colStream || !colControls) return;
+            const left = Array.from(colStream.children).filter(el => el.classList.contains('card')).map(el => el.id);
+            const right = Array.from(colControls.children).filter(el => el.classList.contains('card')).map(el => el.id);
+            try {
+                localStorage.setItem('winvr_card_layout', JSON.stringify({ left, right }));
+            } catch (e) {}
+        }
+
+        function restoreLayout() {
+            if (!colStream || !colControls) return;
+            let layout = null;
+            try {
+                const raw = localStorage.getItem('winvr_card_layout');
+                if (raw) layout = JSON.parse(raw);
+            } catch (e) {}
+            if (!layout || !Array.isArray(layout.left) || !Array.isArray(layout.right)) {
+                layout = defaultLayout;
+            }
+
+            layout.left.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) colStream.appendChild(el);
+            });
+            layout.right.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) colControls.appendChild(el);
+            });
+        }
+
+        // Apply saved layout immediately
+        restoreLayout();
+
+        // 1. Reorder buttons (▲ Up, ▼ Down, ⇄ Swap Column)
+        document.querySelectorAll('.card-header-actions .card-action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const card = this.closest('.card');
+                if (!card) return;
+                const parentCol = card.parentElement;
+                if (!parentCol) return;
+
+                if (this.classList.contains('btn-reorder-up')) {
+                    const prev = card.previousElementSibling;
+                    if (prev && prev.classList.contains('card')) {
+                        parentCol.insertBefore(card, prev);
+                        saveLayout();
+                    }
+                } else if (this.classList.contains('btn-reorder-down')) {
+                    const next = card.nextElementSibling;
+                    if (next && next.classList.contains('card')) {
+                        parentCol.insertBefore(next, card);
+                        saveLayout();
+                    }
+                } else if (this.classList.contains('btn-reorder-side')) {
+                    const targetCol = (parentCol === colStream) ? colControls : colStream;
+                    if (targetCol) {
+                        targetCol.appendChild(card);
+                        saveLayout();
+                    }
+                }
+            });
+        });
+
+        // 2. HTML5 Drag & Drop
+        let draggedCard = null;
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.setAttribute('draggable', 'true');
+
+            card.addEventListener('dragstart', function(e) {
+                if (['INPUT', 'SELECT', 'BUTTON'].includes(e.target.tagName)) {
+                    e.preventDefault();
+                    return;
+                }
+                draggedCard = this;
+                this.classList.add('is-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', this.id);
+            });
+
+            card.addEventListener('dragend', function() {
+                this.classList.remove('is-dragging');
+                document.querySelectorAll('.card.drag-over').forEach(c => c.classList.remove('drag-over'));
+                draggedCard = null;
+                saveLayout();
+            });
+
+            card.addEventListener('dragover', function(e) {
+                if (!draggedCard || draggedCard === this) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                this.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                if (!draggedCard || draggedCard === this) return;
+
+                const parent = this.parentElement;
+                const rect = this.getBoundingClientRect();
+                const isAfter = (e.clientY - rect.top) > (rect.height / 2);
+
+                if (isAfter) {
+                    parent.insertBefore(draggedCard, this.nextSibling);
+                } else {
+                    parent.insertBefore(draggedCard, this);
+                }
+                saveLayout();
+            });
+        });
+
+        // Allow dropping directly onto empty space in columns
+        [colStream, colControls].forEach(col => {
+            if (!col) return;
+            col.addEventListener('dragover', function(e) {
+                if (!draggedCard) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+            col.addEventListener('drop', function(e) {
+                if (!draggedCard) return;
+                if (e.target === col) {
+                    col.appendChild(draggedCard);
+                    saveLayout();
+                }
+            });
+        });
+
+        // 3. Reset Layout Button
+        if (btnResetLayout) {
+            btnResetLayout.addEventListener('click', function(e) {
+                e.preventDefault();
+                defaultLayout.left.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && colStream) colStream.appendChild(el);
+                });
+                defaultLayout.right.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && colControls) colControls.appendChild(el);
+                });
+                try {
+                    localStorage.removeItem('winvr_card_layout');
+                } catch (err) {}
+            });
+        }
+    }
+
     // Initialize
     initTheme();
     initCollapsibleSections();
+    initCardReordering();
     loadSavedCalibration();
     loadNetworkInfo();
     connectServer();

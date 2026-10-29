@@ -856,6 +856,108 @@ input[type="range"]::-webkit-slider-thumb:active {
     transform: rotate(15deg);
 }
 
+/* Card Header Action Controls (Reorder & Collapse) */
+.card-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.card-reorder-btns {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-input);
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.card-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 0;
+    line-height: 1;
+}
+
+.card-action-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--accent-cyan);
+}
+
+[data-theme="light"] .card-action-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--accent-cyan);
+}
+
+.card-drag-handle {
+    cursor: grab;
+    padding: 4px 6px;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast), background var(--transition-fast);
+    user-select: none;
+}
+
+.card-drag-handle:hover {
+    color: var(--accent-cyan);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .card-drag-handle:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.card-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Drag & Drop Feedback */
+.card.is-dragging {
+    opacity: 0.4;
+    transform: scale(0.99);
+    border-style: dashed;
+    border-color: var(--accent-cyan);
+}
+
+.card.drag-over {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.35);
+}
+
+.layout-reset-btn {
+    cursor: pointer;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.layout-reset-btn:hover {
+    border-color: var(--accent-coral);
+    color: var(--accent-coral);
+    transform: translateY(-1px);
+}
+
 /* Checkbox Toggle Row */
 .checkbox-row {
     display: flex;

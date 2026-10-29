@@ -26,6 +26,13 @@
             </div>
 
             <div class="header-badges">
+                <button id="btnResetLayout" class="badge layout-reset-btn" aria-label="Reset Dashboard Layout" title="Reset cards to default positions">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                    <span>Reset Layout</span>
+                </button>
                 <button id="btnThemeToggle" class="badge theme-toggle-btn" aria-label="Toggle Light and Dark Mode" title="Toggle Light/Dark Theme">
                     <svg id="themeIconDark" class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -57,7 +64,7 @@
         <!-- Main Grid -->
         <main class="dashboard-grid">
             <!-- Left Column: Stream & Window Picker & Network Engines -->
-            <div class="col-stream">
+            <div class="col-stream" id="colStream">
                 <!-- Live Display / Window Stream Card -->
                 <section class="card" id="cardStream" aria-labelledby="headingStream">
                     <div class="card-header is-collapsible" data-target="cardStream">
@@ -72,11 +79,28 @@
                             </h2>
                             <p class="card-subtitle">Select any game window, media player, or full monitor to broadcast to your VR headset.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
+                                </svg>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -160,11 +184,28 @@
                             </h2>
                             <p class="card-subtitle">Adjust streaming target frame rate dynamically without restarting. Paces hardware capture and encoding.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
+                                </svg>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -243,11 +284,28 @@
                             </h2>
                             <p class="card-subtitle">Locks 1:1 pixel scaling (scaleResolutionDownBy = 1.0) so WebRTC never downscales your stream to 720p. Matches phone screen for ultra-crisp textures.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
+                                </svg>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -306,11 +364,28 @@
                             </h2>
                             <p class="card-subtitle">Optimized for local 5GHz Wi-Fi / gigabit LAN. Prioritizes zero packet queuing for instantaneous steering response.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
+                                </svg>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -369,7 +444,7 @@
             </div>
 
             <!-- Right Column: Live VR Calibration & Head Tracking Controls -->
-            <div class="col-controls">
+            <div class="col-controls" id="colControls">
                 <!-- Live VR Display & Lens Calibration Card -->
                 <section class="card" id="cardVrCalibration" aria-labelledby="headingVrCalib">
                     <div class="card-header is-collapsible" data-target="cardVrCalibration">
@@ -382,11 +457,28 @@
                             </h2>
                             <p class="card-subtitle">Tune viewport separation, stereoscopic convergence, and display modes live while wearing the headset.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
+                                </svg>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -722,201 +814,28 @@
                             </h2>
                             <p class="card-subtitle">Translates mobile phone motion sensor readings into real-time Windows mouse movements for PC gaming.</p>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="card-body">
-                        <!-- Compass Visualizer -->
-                        <div class="visualizer-container">
-
-                        <!-- 1. Windshield Glare / Highlight Roll-off (Anti-Washout) -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Blinding Windshield & Road Glare Cut:</span>
-                            <span class="setting-val" id="valHighlightCut" style="color: var(--accent-green);">0% (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeHighlightCut" min="0.00" max="0.75" step="0.05" value="0.00" style="flex: 1;" aria-label="Windshield Glare Cut">
-                            <button class="btn-micro" id="btnHighlightCutDefault" title="Reset Glare Cut to 0%">0%</button>
-                        </div>
-
-                        <!-- 2. Daylight Exposure Multiplier -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Daylight Exposure Multiplier:</span>
-                            <span class="setting-val" id="valExposure">1.00x (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeExposure" min="0.40" max="1.60" step="0.05" value="1.00" style="flex: 1;" aria-label="Daylight Exposure">
-                            <button class="btn-micro" id="btnExposureDefault" title="Reset Exposure to 1.00x">1.00x</button>
-                        </div>
-
-                        <!-- 3. Cockpit Shadow Boost -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Cockpit Interior & Gauge Boost:</span>
-                            <span class="setting-val" id="valShadowBoost">0% (1:1 True Black)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeShadowBoost" min="0.00" max="0.40" step="0.02" value="0.00" style="flex: 1;" aria-label="Cockpit Shadow Boost">
-                            <button class="btn-micro" id="btnShadowBoostDefault" title="Reset Shadow Boost to 0%">0%</button>
-                        </div>
-
-                        <!-- 4. Gamma (Road Depth & Dark Asphalt) -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Road Depth & Dark Asphalt (Gamma):</span>
-                            <span class="setting-val" id="valGamma">1.00 (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeGamma" min="0.60" max="2.20" step="0.05" value="1.00" style="flex: 1;" aria-label="Road Depth Gamma">
-                            <button class="btn-micro" id="btnGammaDefault" title="Reset Gamma to 1.00">1.00</button>
-                        </div>
-
-                        <!-- 5. Black Level / Brightness -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Black Level Offset (Brightness):</span>
-                            <span class="setting-val" id="valBrightness">0% (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeBrightness" min="-0.20" max="0.20" step="0.01" value="0.00" style="flex: 1;" aria-label="Black Level Brightness">
-                            <button class="btn-micro" id="btnBrightnessDefault" title="Reset Brightness to 0%">0%</button>
-                        </div>
-
-                        <!-- 6. Dynamic Contrast -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Game Dynamic Contrast:</span>
-                            <span class="setting-val" id="valContrast">0% (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px; margin-bottom: 8px;">
-                            <input type="range" id="rangeContrast" min="0.80" max="1.60" step="0.02" value="1.00" style="flex: 1;" aria-label="Game Dynamic Contrast">
-                            <button class="btn-micro" id="btnContrastDefault" title="Reset Contrast to 0%">0%</button>
-                        </div>
-
-                        <!-- 7. Color Saturation & Vibrance -->
-                        <div class="setting-header">
-                            <span class="setting-name" style="font-size: 0.8rem;">Color Saturation & Vibrance:</span>
-                            <span class="setting-val" id="valSaturation">0% (1:1 Reference)</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 2px;">
-                            <input type="range" id="rangeSaturation" min="0.50" max="2.20" step="0.05" value="1.00" style="flex: 1;" aria-label="Color Saturation">
-                            <button class="btn-micro" id="btnSaturationDefault" title="Reset Saturation to 0%">0%</button>
-                        </div>
-
-                        <!-- Assetto Corsa & ETS2 Hotkey Tip -->
-                        <div style="background: rgba(0, 180, 255, 0.08); border-left: 3px solid var(--accent-cyan); padding: 8px 12px; border-radius: 4px; margin-top: 12px; font-size: 0.74rem; color: #d0e8ff; line-height: 1.45;">
-                            <strong>💡 Pro Sim-Racer Tip:</strong> In Assetto Corsa cockpit view, the camera auto-exposes for dark seats, blowing out the windshield. Press <strong>Page Down</strong> on your PC keyboard inside Assetto Corsa to immediately lower cockpit camera exposure until outdoor tarmac and sky look 100% photo-realistic!
-                        </div>
-                    </div>
-
-                    <!-- Center Separator Live Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Center Split / Separator Line:</span>
-                            <span class="setting-val" id="valCenterSplit">50.0%</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <button class="btn-micro" id="btnNudgeLeft" title="Nudge 0.2% Left">◀ Left</button>
-                            <input type="range" id="rangeCenterSplit" min="40.0" max="60.0" step="0.1" value="50.0" style="flex: 1;" aria-label="Center Split">
-                            <button class="btn-micro" id="btnNudgeRight" title="Nudge 0.2% Right">Right ▶</button>
-                            <button class="btn-micro" id="btnResetSplit" title="Reset to 50.0%">50%</button>
-                        </div>
-                    </div>
-
-                    <!-- Lens Optical Offset / Convergence Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">Horizontal Lens Convergence:</span>
-                            <span class="setting-val" id="valLensOffset">0.0 mm</span>
-                        </div>
-                        <input type="range" id="rangeLensOffset" min="-15" max="15" step="0.5" value="0.0" aria-label="Lens Offset">
-                    </div>
-
-                    <!-- IPD Slider -->
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name">IPD (Lens Distance):</span>
-                            <span class="setting-val" id="valHostIpd">63 mm</span>
-                        </div>
-                        <input type="range" id="rangeHostIpd" min="50" max="75" step="1" value="63" aria-label="Interpupillary Distance">
-                    </div>
-
-                    <!-- FPV FOV Slider -->
-                    <div class="setting-item" id="itemFpvFov">
-                        <div class="setting-header">
-                            <span class="setting-name">FPV Game Immersion FOV:</span>
-                            <span class="setting-val" id="valFpvFov">105°</span>
-                        </div>
-                        <input type="range" id="rangeFpvFov" min="80" max="120" step="1" value="105" aria-label="Field of View">
-                    </div>
-
-                    <!-- Double Vision Fix: Stereoscopic Image Alignment -->
-                    <hr class="divider">
-                    <div class="setting-item">
-                        <div class="setting-header">
-                            <span class="setting-name" style="color: var(--accent-green);">👁️ Double Vision Fix (Stereoscopic Image Convergence):</span>
-                        </div>
-                        <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.45;">
-                            Adjust while looking through your VR headset until both eyes fuse into <strong>ONE clear unified 3D view</strong> without overlap, then click Save.
-                        </div>
-
-                        <!-- Horizontal Image Convergence -->
-                        <div class="setting-header">
-                            <span class="setting-name">Horizontal Convergence (Merge In / Out):</span>
-                            <span class="setting-val" id="valShiftX">0.0 mm</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <button class="btn-micro" id="btnShiftXIn" title="Merge Inward">◀ Merge In</button>
-                            <input type="range" id="rangeShiftX" min="-30.0" max="30.0" step="0.5" value="0.0" style="flex: 1;" aria-label="Horizontal Convergence">
-                            <button class="btn-micro" id="btnShiftXOut" title="Merge Outward">Merge Out ▶</button>
-                            <button class="btn-micro" id="btnShiftXReset" title="Reset to 0.0">0</button>
-                        </div>
-
-                        <!-- Vertical Alignment (Y-Shift) -->
-                        <div class="setting-header" style="margin-top: 10px;">
-                            <span class="setting-name">Vertical Level Alignment (Y-Shift):</span>
-                            <span class="setting-val" id="valShiftY">0.0 mm</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                            <button class="btn-micro" id="btnShiftYDown" title="Shift Down">⬇ Lower</button>
-                            <input type="range" id="rangeShiftY" min="-15.0" max="15.0" step="0.5" value="0.0" style="flex: 1;" aria-label="Vertical Alignment">
-                            <button class="btn-micro" id="btnShiftYUp" title="Shift Up">Raise ⬆</button>
-                            <button class="btn-micro" id="btnShiftYReset" title="Reset to 0.0">0</button>
-                        </div>
-
-                        <button id="btnSaveCalibration" class="btn btn-secondary" style="width: 100%; margin-top: 12px; border-color: rgba(16, 185, 129, 0.4); color: var(--accent-green);">
-                            💾 Save Alignment as Default
-                        </button>
-                    </div>
-
-                    <!-- Remote Recenter -->
-                    <button id="btnRemoteRecenter" class="btn btn-secondary" style="margin-top: 12px; width: 100%;">
-                        🎯 Remote Recenter Phone VR Screen
-                    </button>
-                    </div>
-                </section>
-
-                <!-- Gyroscope & Mouse Look Control Card -->
-                <section class="card" id="cardGyro" aria-labelledby="headingGyro">
-                    <div class="card-header is-collapsible" data-target="cardGyro">
-                        <div>
-                            <h2 class="card-title" id="headingGyro">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="22" y1="12" x2="18" y2="12"></line>
-                                    <line x1="6" y1="12" x2="2" y2="12"></line>
-                                    <line x1="12" y1="6" x2="12" y2="2"></line>
-                                    <line x1="12" y1="22" x2="12" y2="18"></line>
+                        <div class="card-header-actions">
+                            <div class="card-reorder-btns" title="Rearrange section">
+                                <button class="card-action-btn btn-reorder-up" title="Move section up" aria-label="Move Up">▲</button>
+                                <button class="card-action-btn btn-reorder-down" title="Move section down" aria-label="Move Down">▼</button>
+                                <button class="card-action-btn btn-reorder-side" title="Move to other column (Left ⇄ Right)" aria-label="Move to other column">⇄</button>
+                            </div>
+                            <div class="card-drag-handle" title="Drag to reorder section" aria-label="Drag handle">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="6" r="1.8"></circle>
+                                    <circle cx="9" cy="12" r="1.8"></circle>
+                                    <circle cx="9" cy="18" r="1.8"></circle>
+                                    <circle cx="15" cy="6" r="1.8"></circle>
+                                    <circle cx="15" cy="12" r="1.8"></circle>
+                                    <circle cx="15" cy="18" r="1.8"></circle>
                                 </svg>
-                                Gyro Head Tracking & Mouse Look
-                            </h2>
-                            <p class="card-subtitle">Translates mobile phone motion sensor readings into real-time Windows mouse movements for PC gaming.</p>
+                            </div>
+                            <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
+                                <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
                         </div>
-                        <button class="card-toggle-arrow" aria-label="Toggle section" title="Collapse / Expand">
-                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
                     </div>
 
                     <div class="card-body">
