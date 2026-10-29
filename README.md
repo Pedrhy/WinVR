@@ -29,9 +29,9 @@
 
 ---
 
-### 3. 🛡️ Brave Tab & Window Switching Bug Fix
+### 3. 🛡️ Browser Tab & Window Switching Bug Fix
 - **Root Cause**:
-  When switching tabs in Brave browser or switching to another application, Chromium throttles background execution, drops `clientWidth`/`clientHeight` to 0, cancels fullscreen, and suspends `requestAnimationFrame`. When returning, stale cached dimensions and lack of responsive layout synchronization left the primary window permanently locked into a compressed mobile view.
+  When switching tabs in the browser or switching to another application, Chromium engines throttle background execution, drop `clientWidth`/`clientHeight` to 0, cancel fullscreen, and suspend `requestAnimationFrame`. When returning, stale cached dimensions and lack of responsive layout synchronization left the primary window permanently locked into a compressed mobile view.
 - **`ViewportLayoutManager` Fix**:
   Implemented in `web/host.js` and `web/vr.js` listening to `resize`, `visibilitychange`, `pageshow`, and `focus`. On return, it forces immediate and staged layout passes, dynamically calculates actual viewport dimensions, applies the correct view classes (`is-desktop-view`, `is-tablet-view`, `is-mobile-view`), re-measures canvases, and ensures video playback continues seamlessly without tearing, stuck layouts, or stream resets.
 
