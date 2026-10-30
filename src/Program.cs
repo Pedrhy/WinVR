@@ -307,7 +307,7 @@ namespace WinVR
         private TcpListener _httpsListener;
         private WinVRUdpServer _udpServer;
         private bool _running = false;
-        private readonly int _httpPort;
+        private int _httpPort;
         private readonly int _httpsPort;
         private readonly int _udpPort = 8082;
         private readonly string _webRoot;
@@ -321,6 +321,8 @@ namespace WinVR
         private WebSocketClient _phoneClient = null;
         private readonly object _clientsLock = new object();
 
+        public int HttpPort { get { return _httpPort; } }
+        public int HttpsPort { get { return _httpsPort; } }
         public WebSocketClient HostClient { get { return _hostClient; } }
         public WebSocketClient PhoneClient { get { return _phoneClient; } }
         public int UdpPort { get { return _udpPort; } }
@@ -348,21 +350,35 @@ namespace WinVR
         {
             _running = true;
 
-            // 1. HTTP Listener
-            try
+            // 1. HTTP Listener with automatic port fallback if 8080 is reserved/in-use
+            int[] candidates = new int[] { _httpPort, 8081, 8085, 8000, 8888, 5000 };
+            bool bound = false;
+            foreach (int port in candidates)
             {
-                _httpListener = new TcpListener(IPAddress.Any, _httpPort);
-                _httpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                _httpListener.Start();
-                Log(string.Format("HTTP Server active on port {0} (TCP_NODELAY + 16MB Buffers)", _httpPort));
+                try
+                {
+                    _httpListener = new TcpListener(IPAddress.Any, port);
+                    _httpListener.Start();
+                    _httpPort = port;
+                    bound = true;
+                    Log(string.Format("HTTP Server active on port {0} (TCP_NODELAY + 16MB Buffers)", _httpPort));
 
-                Thread httpThread = new Thread(AcceptHttpLoop);
-                httpThread.IsBackground = true;
-                httpThread.Start();
+                    Thread httpThread = new Thread(AcceptHttpLoop);
+                    httpThread.IsBackground = true;
+                    httpThread.Start();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Log(string.Format("Port {0} not available ({1}), trying next port...", port, ex.Message));
+                    try { if (_httpListener != null) _httpListener.Stop(); } catch { }
+                    _httpListener = null;
+                }
             }
-            catch (Exception ex)
+
+            if (!bound)
             {
-                Log("Failed to start HTTP listener: " + ex.Message);
+                Log("Warning: Could not bind any HTTP port. Secure HTTPS is still active on port " + _httpsPort);
             }
 
             // 2. HTTPS Listener (if cert available)
@@ -371,7 +387,6 @@ namespace WinVR
                 try
                 {
                     _httpsListener = new TcpListener(IPAddress.Any, _httpsPort);
-                    _httpsListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                     _httpsListener.Start();
                     Log(string.Format("HTTPS Secure Server active on port {0} (SSL/TLS + 16MB Buffers)", _httpsPort));
 
@@ -1560,20 +1575,20 @@ namespace WinVR
                 }
             }
 
+            WinVRServer server = new WinVRServer(httpPort, httpsPort, webRoot, cert);
+            server.Start();
+
             Console.WriteLine("========================================================");
             Console.WriteLine("    ⚡ WinVR - Windows Display to VR Converter Server    ");
             Console.WriteLine("========================================================");
             Console.WriteLine("Local IPv4: " + localIp);
-            Console.WriteLine("HTTP:       http://" + localIp + ":" + httpPort + "/vr");
+            Console.WriteLine("HTTP:       http://" + localIp + ":" + server.HttpPort + "/vr");
             if (cert != null)
             {
                 Console.WriteLine("HTTPS:      https://" + localIp + ":" + httpsPort + "/vr (Gyro Unlocked)");
             }
             Console.WriteLine("UDP:        " + localIp + ":8082 (16MB Sockets, Sub-ms Head Tracking)");
             Console.WriteLine("========================================================");
-
-            WinVRServer server = new WinVRServer(httpPort, httpsPort, webRoot, cert);
-            server.Start();
 
             bool isHeadless = false;
             foreach (string arg in args)
@@ -1592,9 +1607,20 @@ namespace WinVR
             }
             else
             {
+                // Auto-launch the Dashboard in the user's default browser on startup
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    Thread.Sleep(600);
+                    try
+                    {
+                        Process.Start(string.Format("http://localhost:{0}/", server.HttpPort));
+                    }
+                    catch { }
+                });
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new WinVRForm(server, localIp, httpPort, httpsPort));
+                Application.Run(new WinVRForm(server, localIp, server.HttpPort, httpsPort));
             }
         }
     }

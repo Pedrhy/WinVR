@@ -496,6 +496,11 @@
             state.activeUrl = data.httpsUrl || data.httpUrl;
             txtMobileUrl.value = state.activeUrl;
             renderQr(state.activeUrl);
+
+            if (btnSelectHttp && data.httpPort) {
+                btnSelectHttp.textContent = `🌐 HTTP ${data.httpPort}`;
+                btnSelectHttp.title = `Use standard HTTP (Port ${data.httpPort})`;
+            }
         } catch (e) {
             console.warn('[WinVR] Could not fetch IP endpoint:', e);
             const fallback = window.location.origin + '/vr';

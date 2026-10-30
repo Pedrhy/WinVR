@@ -13,10 +13,6 @@ if not exist "%~dp0WinVR.exe" (
 )
 
 echo Starting WinVR Server and Controller...
-start "" "%~dp0WinVR.exe"
-
-timeout /t 2 /nobreak >nul
-echo Opening PC Host Dashboard in default browser...
-start http://localhost:8080/
+start "" "%~dp0WinVR.exe" %*
 
 endlocal
