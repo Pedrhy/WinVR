@@ -545,13 +545,71 @@ namespace WinVR
             stream.Flush();
         }
 
+        private byte[] LoadAssetBytes(string relativePath)
+        {
+            // 1. Try disk file first if it exists
+            if (!string.IsNullOrEmpty(_webRoot))
+            {
+                string diskPath = Path.Combine(_webRoot, relativePath.TrimStart('/', '\\'));
+                if (File.Exists(diskPath))
+                {
+                    try { return File.ReadAllBytes(diskPath); } catch { }
+                }
+            }
+
+            // 2. Try Embedded Resource fallback
+            string normalized = relativePath.TrimStart('/', '\\').Replace('\\', '/');
+            string resName = "web." + normalized.Replace('/', '.');
+            using (Stream s = typeof(Program).Assembly.GetManifestResourceStream(resName))
+            {
+                if (s != null)
+                {
+                    byte[] data = new byte[s.Length];
+                    int totalRead = 0;
+                    while (totalRead < data.Length)
+                    {
+                        int read = s.Read(data, totalRead, data.Length - totalRead);
+                        if (read <= 0) break;
+                        totalRead += read;
+                    }
+                    return data;
+                }
+            }
+
+            // 3. Try direct resource name
+            using (Stream s = typeof(Program).Assembly.GetManifestResourceStream(normalized))
+            {
+                if (s != null)
+                {
+                    byte[] data = new byte[s.Length];
+                    int totalRead = 0;
+                    while (totalRead < data.Length)
+                    {
+                        int read = s.Read(data, totalRead, data.Length - totalRead);
+                        if (read <= 0) break;
+                        totalRead += read;
+                    }
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
         private void ServeHttp(Stream stream, string urlPath)
         {
-            if (urlPath == "/" || urlPath == "/index.html") urlPath = "/index.html";
-            else if (urlPath == "/vr") urlPath = "/vr.html";
+            if (string.IsNullOrEmpty(urlPath)) urlPath = "/";
+
+            // Strip query string and fragment
+            int qIdx = urlPath.IndexOf('?');
+            if (qIdx >= 0) urlPath = urlPath.Substring(0, qIdx);
+            int hIdx = urlPath.IndexOf('#');
+            if (hIdx >= 0) urlPath = urlPath.Substring(0, hIdx);
+
+            urlPath = urlPath.Trim();
 
             // API Endpoint returning IP & Ports
-            if (urlPath.StartsWith("/api/ip"))
+            if (urlPath.StartsWith("/api/ip", StringComparison.OrdinalIgnoreCase))
             {
                 string localIp = DiscoverLocalIP();
                 string json = string.Format("{{\"ip\":\"{0}\",\"httpPort\":{1},\"httpsPort\":{2},\"udpPort\":{3},\"httpUrl\":\"http://{0}:{1}/vr\",\"httpsUrl\":\"https://{0}:{2}/vr\"}}",
@@ -561,19 +619,50 @@ namespace WinVR
                 return;
             }
 
-            int qIdx = urlPath.IndexOf('?');
-            if (qIdx >= 0) urlPath = urlPath.Substring(0, qIdx);
-
-            string filePath = Path.Combine(_webRoot, urlPath.TrimStart('/'));
-            if (File.Exists(filePath))
+            // Normalize URL aliases for Dashboard
+            string cleanPath = urlPath.TrimStart('/');
+            if (cleanPath == "" ||
+                cleanPath.Equals("index.html", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("index", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("dashboard", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("host", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("pc", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("web", StringComparison.OrdinalIgnoreCase) ||
+                cleanPath.Equals("web/index.html", StringComparison.OrdinalIgnoreCase))
             {
-                byte[] fileBytes = File.ReadAllBytes(filePath);
-                string mime = GetMimeType(filePath);
+                cleanPath = "index.html";
+            }
+            // Normalize URL aliases for VR Mobile client
+            else if (cleanPath.Equals("vr", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("vr.html", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("client", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("phone", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("mobile", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("headset", StringComparison.OrdinalIgnoreCase) ||
+                     cleanPath.Equals("web/vr.html", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanPath = "vr.html";
+            }
+            else if (cleanPath.StartsWith("web/", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanPath = cleanPath.Substring(4);
+            }
+
+            byte[] fileBytes = LoadAssetBytes(cleanPath);
+            if (fileBytes != null && fileBytes.Length > 0)
+            {
+                string mime = GetMimeType(cleanPath);
                 SendHttpResponse(stream, 200, "OK", mime, fileBytes);
             }
             else
             {
-                byte[] notFound = Encoding.UTF8.GetBytes("<h1>404 Not Found</h1>");
+                string notFoundHtml = string.Format(
+                    "<!DOCTYPE html><html><head><title>WinVR - Page Not Found</title>" +
+                    "<style>body{{font-family:sans-serif;background:#0a0d14;color:#f8fafc;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;}}" +
+                    "h1{{color:#00f2fe;margin-bottom:8px;}}p{{color:#94a3b8;margin-bottom:24px;}}a{{background:#0072ff;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;}}</style></head>" +
+                    "<body><h1>404 - WinVR Resource Not Found</h1><p>The requested path <code>{0}</code> could not be located.</p><a href=\"/\">Return to PC Dashboard</a></body></html>",
+                    urlPath);
+                byte[] notFound = Encoding.UTF8.GetBytes(notFoundHtml);
                 SendHttpResponse(stream, 404, "Not Found", "text/html", notFound);
             }
         }
@@ -1422,10 +1511,17 @@ namespace WinVR
             string webRoot = Path.Combine(exeDir, "web");
             if (!Directory.Exists(webRoot))
             {
-                webRoot = Path.Combine(Directory.GetParent(exeDir).FullName, "web");
+                string parentWeb = Path.Combine(Directory.GetParent(exeDir).FullName, "web");
+                if (Directory.Exists(parentWeb)) webRoot = parentWeb;
+                else
+                {
+                    string curWeb = Path.Combine(Environment.CurrentDirectory, "web");
+                    if (Directory.Exists(curWeb)) webRoot = curWeb;
+                    else webRoot = ""; // Will serve seamlessly from embedded assembly resources!
+                }
             }
 
-            // Load SSL certificate if present
+            // Load SSL certificate from disk, or fall back to embedded certificate
             X509Certificate2 cert = null;
             string pfxPath = Path.Combine(exeDir, "cert.pfx");
             if (!File.Exists(pfxPath))
@@ -1441,7 +1537,26 @@ namespace WinVR
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Warning: Could not load cert.pfx: " + ex.Message);
+                    Console.WriteLine("Warning: Could not load cert.pfx from disk: " + ex.Message);
+                }
+            }
+            if (cert == null)
+            {
+                try
+                {
+                    using (Stream s = typeof(Program).Assembly.GetManifestResourceStream("cert.pfx"))
+                    {
+                        if (s != null)
+                        {
+                            byte[] certBytes = new byte[s.Length];
+                            s.Read(certBytes, 0, certBytes.Length);
+                            cert = new X509Certificate2(certBytes, "winvr123");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Warning: Could not load embedded cert: " + ex.Message);
                 }
             }
 

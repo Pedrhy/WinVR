@@ -17,6 +17,6 @@ start "" "%~dp0WinVR.exe"
 
 timeout /t 2 /nobreak >nul
 echo Opening PC Host Dashboard in default browser...
-start http://localhost:8080
+start http://localhost:8080/
 
 endlocal

@@ -15,8 +15,8 @@ if not exist %CSC% (
     exit /b 1
 )
 
-echo Compiling WinVR.exe with %CSC% ...
-%CSC% /nologo /target:winexe /optimize+ /r:System.dll,System.Drawing.dll,System.Windows.Forms.dll,System.Web.Extensions.dll /out:"%~dp0WinVR.exe" "%~dp0src\Program.cs"
+echo Compiling WinVR.exe with %CSC% (Embedding Web Assets for Standalone Portability) ...
+%CSC% /nologo /target:winexe /optimize+ /resource:"%~dp0web\index.html",web.index.html /resource:"%~dp0web\app.css",web.app.css /resource:"%~dp0web\host.js",web.host.js /resource:"%~dp0web\vr.html",web.vr.html /resource:"%~dp0web\vr.css",web.vr.css /resource:"%~dp0web\vr.js",web.vr.js /resource:"%~dp0web\qrcode.js",web.qrcode.js /resource:"%~dp0cert.pfx",cert.pfx /r:System.dll,System.Drawing.dll,System.Windows.Forms.dll,System.Web.Extensions.dll /out:"%~dp0WinVR.exe" "%~dp0src\Program.cs"
 
 if %ERRORLEVEL% equ 0 (
     echo.
